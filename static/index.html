@@ -1,0 +1,1049 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CDC 儿童发育里程碑追踪器 — 实时检测</title>
+<style>
+:root {
+  --primary: #4f46e5; --primary-light: #818cf8;
+  --success: #10b981; --warning: #f59e0b; --danger: #ef4444;
+  --bg: #0f172a; --card: #1e293b; --card2: #334155;
+  --text: #f1f5f9; --text2: #94a3b8; --border: #475569;
+  --radius: 12px;
+}
+* { margin:0; padding:0; box-sizing:border-box; }
+body { font-family: -apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif; background:var(--bg); color:var(--text); overflow-x:hidden; }
+
+/* Header */
+.header { background:linear-gradient(135deg,var(--primary),#7c3aed); padding:16px 24px; display:flex; align-items:center; justify-content:space-between; }
+.header h1 { font-size:20px; }
+.header-sub { font-size:13px; opacity:0.8; }
+.header-right { display:flex; align-items:center; gap:16px; }
+.status-dot { width:10px; height:10px; border-radius:50%; display:inline-block; }
+.status-dot.off { background:#ef4444; }
+.status-dot.on { background:#10b981; animation: pulse 1.5s infinite; }
+@keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.5} }
+.fps-counter { font-size:13px; color:rgba(255,255,255,0.7); font-family:monospace; }
+
+/* Layout */
+.app { display:grid; grid-template-columns:260px 1fr 340px; height:calc(100vh - 56px); }
+@media(max-width:1100px) { .app { grid-template-columns:200px 1fr 280px; } }
+
+/* Sidebar */
+.sidebar { background:var(--card); padding:16px; border-right:1px solid var(--border); overflow-y:auto; }
+.sidebar h3 { font-size:13px; text-transform:uppercase; color:var(--text2); margin-bottom:10px; letter-spacing:1px; }
+.sidebar-group { margin-bottom:20px; }
+
+.task-btn {
+  display:flex; align-items:center; gap:10px; padding:10px 12px; border-radius:8px;
+  cursor:pointer; font-size:14px; font-weight:500; border:none; background:transparent;
+  color:var(--text); width:100%; text-align:left; transition:all 0.15s;
+}
+.task-btn:hover { background:var(--card2); }
+.task-btn.active { background:var(--primary); color:white; }
+.task-btn .icon { font-size:20px; width:28px; text-align:center; }
+
+.config-section { margin-top:20px; }
+.config-row { margin-bottom:12px; }
+.config-row label { font-size:12px; color:var(--text2); display:block; margin-bottom:4px; }
+.config-row input, .config-row select {
+  width:100%; padding:8px 10px; border-radius:6px; border:1px solid var(--border);
+  background:var(--card2); color:var(--text); font-size:14px; outline:none;
+}
+.config-row input:focus, .config-row select:focus { border-color:var(--primary); }
+
+.start-btn {
+  width:100%; padding:12px; border-radius:8px; border:none; font-size:15px;
+  font-weight:700; cursor:pointer; margin-top:12px; transition:all 0.2s;
+}
+.start-btn.go { background:var(--success); color:white; }
+.start-btn.go:hover { background:#059669; }
+.start-btn.stop { background:var(--danger); color:white; }
+.start-btn.stop:hover { background:#dc2626; }
+
+/* Center - Video */
+.video-area { position:relative; background:#000; display:flex; align-items:center; justify-content:center; }
+video { width:100%; height:100%; object-fit:contain; }
+canvas#overlay { position:absolute; top:0; left:0; width:100%; height:100%; pointer-events:none; }
+.video-placeholder { text-align:center; color:var(--text2); }
+.video-placeholder .big { font-size:64px; margin-bottom:16px; }
+
+.score-overlay {
+  position:absolute; top:16px; left:16px; padding:8px 18px; border-radius:8px;
+  font-size:18px; font-weight:800; backdrop-filter:blur(8px); display:none;
+}
+.score-overlay.normal { background:rgba(16,185,129,0.85); color:white; }
+.score-overlay.borderline { background:rgba(245,158,11,0.85); color:white; }
+.score-overlay.at_risk { background:rgba(239,68,68,0.85); color:white; }
+
+.calibration-bar {
+  position:absolute; bottom:20px; left:50%; transform:translateX(-50%);
+  background:rgba(0,0,0,0.7); padding:10px 24px; border-radius:8px;
+  font-size:14px; display:none; text-align:center;
+}
+.calibration-bar .bar { height:4px; background:var(--card2); border-radius:2px; margin-top:6px; width:200px; }
+.calibration-bar .bar-fill { height:100%; background:var(--primary); border-radius:2px; transition:width 0.3s; }
+
+/* Right Panel - Features */
+.features-panel { background:var(--card); border-left:1px solid var(--border); padding:16px; overflow-y:auto; }
+.features-panel h3 { font-size:13px; text-transform:uppercase; color:var(--text2); margin-bottom:12px; letter-spacing:1px; }
+
+.feature-card {
+  background:var(--card2); border-radius:8px; padding:12px; margin-bottom:10px;
+}
+.feature-label { font-size:11px; color:var(--text2); text-transform:uppercase; letter-spacing:0.5px; }
+.feature-value { font-size:22px; font-weight:700; margin-top:2px; font-family:monospace; }
+.feature-value.normal { color:var(--success); }
+.feature-value.warning { color:var(--warning); }
+.feature-value.danger { color:var(--danger); }
+
+.feature-row { display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-bottom:8px; }
+
+/* AU Bars */
+.au-section { margin-top:12px; }
+.au-row { display:flex; align-items:center; gap:8px; margin-bottom:6px; }
+.au-label { width:80px; font-size:11px; color:var(--text2); text-align:right; flex-shrink:0; }
+.au-track { flex:1; height:14px; background:var(--bg); border-radius:7px; overflow:hidden; }
+.au-fill { height:100%; border-radius:7px; transition:width 0.2s; }
+.au-val { width:32px; font-size:11px; font-family:monospace; color:var(--text2); }
+
+/* Gaze indicator */
+.gaze-indicator {
+  width:120px; height:120px; background:var(--bg); border-radius:50%;
+  position:relative; margin:12px auto;
+  border:2px solid var(--border);
+}
+.gaze-dot {
+  width:16px; height:16px; background:var(--primary); border-radius:50%;
+  position:absolute; top:50%; left:50%; transform:translate(-50%,-50%);
+  transition:all 0.15s;
+}
+.gaze-label {
+  position:absolute; font-size:10px; color:var(--text2);
+}
+.gaze-label.top { top:4px; left:50%; transform:translateX(-50%); }
+.gaze-label.bottom { bottom:4px; left:50%; transform:translateX(-50%); }
+.gaze-label.left { left:4px; top:50%; transform:translateY(-50%); }
+.gaze-label.right { right:4px; top:50%; transform:translateY(-50%); }
+
+/* Skeleton legend */
+.legend { margin-top:16px; padding-top:12px; border-top:1px solid var(--border); }
+.legend-title { font-size:11px; color:var(--text2); margin-bottom:8px; }
+.legend-item { font-size:12px; display:flex; align-items:center; gap:6px; margin-bottom:4px; }
+.legend-dot { width:8px; height:8px; border-radius:50%; }
+
+/* Assessment button */
+.assess-btn {
+  width:100%; padding:12px; border-radius:8px; border:2px solid var(--primary);
+  background:transparent; color:var(--primary); font-size:14px; font-weight:700;
+  cursor:pointer; margin-top:8px; transition:all 0.2s;
+}
+.assess-btn:hover { background:var(--primary); color:white; }
+
+/* Assessment Modal */
+.modal-overlay {
+  position:fixed; inset:0; background:rgba(0,0,0,0.7); z-index:1000;
+  display:flex; align-items:center; justify-content:center;
+  animation: fadeIn 0.2s;
+}
+@keyframes fadeIn { from{opacity:0} to{opacity:1} }
+.modal {
+  background:var(--card); border-radius:16px; max-width:700px; width:95%;
+  max-height:90vh; overflow-y:auto; padding:28px; position:relative;
+  animation: slideIn 0.3s;
+}
+@keyframes slideIn { from{transform:translateY(20px);opacity:0} to{transform:translateY(0);opacity:1} }
+.modal-close {
+  position:absolute; top:12px; right:16px; background:none; border:none;
+  color:var(--text2); font-size:24px; cursor:pointer;
+}
+.modal-close:hover { color:var(--text); }
+
+/* Classification badges */
+.classification-badge {
+  display:inline-flex; align-items:center; gap:8px; padding:10px 20px;
+  border-radius:12px; font-size:16px; font-weight:800;
+}
+.cls-normal { background:rgba(16,185,129,0.15); color:#10b981; border:2px solid #10b981; }
+.cls-advanced { background:rgba(59,130,246,0.15); color:#3b82f6; border:2px solid #3b82f6; }
+.cls-borderline { background:rgba(245,158,11,0.15); color:#f59e0b; border:2px solid #f59e0b; }
+.cls-mild_delay { background:rgba(245,158,11,0.15); color:#f59e0b; border:2px solid #f59e0b; }
+.cls-significant_delay { background:rgba(239,68,68,0.15); color:#ef4444; border:2px solid #ef4444; }
+.cls-at_risk_asd { background:rgba(168,85,247,0.15); color:#a855f7; border:2px solid #a855f7; }
+
+/* Domain progress bars */
+.domain-card { background:var(--card2); border-radius:10px; padding:16px; margin-bottom:12px; }
+.domain-header { display:flex; justify-content:space-between; align-items:center; margin-bottom:8px; }
+.domain-name { font-weight:700; font-size:15px; }
+.domain-age { font-size:13px; color:var(--text2); }
+.domain-bar { height:8px; background:var(--bg); border-radius:4px; overflow:hidden; margin-bottom:8px; }
+.domain-fill { height:100%; border-radius:4px; transition:width 0.8s; }
+.domain-milestones { font-size:12px; color:var(--text2); line-height:1.6; }
+.milestone-achieved { color:var(--success); }
+.milestone-missing { color:var(--danger); }
+.milestone-advanced { color:#3b82f6; }
+
+/* ASD section */
+.asd-card { background:var(--card2); border-radius:10px; padding:16px; margin-bottom:12px; }
+.asd-risk { font-size:14px; font-weight:700; padding:4px 12px; border-radius:6px; display:inline-block; }
+.asd-low { background:rgba(16,185,129,0.15); color:#10b981; }
+.asd-medium { background:rgba(245,158,11,0.15); color:#f59e0b; }
+.asd-high { background:rgba(239,68,68,0.15); color:#ef4444; }
+
+/* Recommendations */
+.rec-list { list-style:none; padding:0; }
+.rec-list li { padding:8px 12px; border-radius:8px; margin-bottom:6px; font-size:14px; line-height:1.5; background:var(--card2); }
+
+/* Disclaimer */
+.disclaimer-box {
+  margin-top:16px; padding:12px 16px; border-radius:8px;
+  background:rgba(245,158,11,0.1); border:1px solid rgba(245,158,11,0.3);
+  font-size:12px; color:var(--warning); line-height:1.5;
+}
+
+/* Print */
+@media print {
+  .modal-overlay { position:static; background:white; }
+  .modal { max-width:100%; max-height:none; color:#000; background:#fff; }
+  .modal-close { display:none; }
+  .domain-card, .asd-card { border:1px solid #ccc; }
+}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div>
+    <h1>CDC 儿童发育里程碑追踪器</h1>
+    <div class="header-sub">实时视频分析 — MediaPipe + 规则引擎</div>
+  </div>
+  <div class="header-right">
+    <span class="fps-counter" id="fpsCounter">-- FPS</span>
+    <span><span class="status-dot off" id="statusDot"></span> <span id="statusText" style="font-size:13px">未连接</span></span>
+  </div>
+</div>
+
+<div class="app">
+
+  <!-- ─── Left Sidebar ─── -->
+  <div class="sidebar">
+    <div class="sidebar-group">
+      <h3>评估任务</h3>
+      <button class="task-btn active" data-task="gross_motor">
+        <span class="icon">🏃</span> 粗大运动
+      </button>
+      <button class="task-btn" data-task="fine_motor">
+        <span class="icon">🤏</span> 精细运动
+      </button>
+      <button class="task-btn" data-task="joint_attention">
+        <span class="icon">👀</span> 共同注意力
+      </button>
+      <button class="task-btn" data-task="pain_monitor">
+        <span class="icon">😣</span> 疼痛监测
+      </button>
+    </div>
+
+    <div class="config-section">
+      <h3>设置</h3>
+      <div class="config-row">
+        <label>儿童月龄</label>
+        <input type="number" id="ageInput" value="24" min="0" max="60">
+      </div>
+      <div class="config-row">
+        <label>摄像头</label>
+        <select id="cameraSelect"><option value="">加载中...</option></select>
+      </div>
+      <div class="config-row">
+        <label>发送帧率</label>
+        <select id="fpsSelect">
+          <option value="5">5 FPS (省资源)</option>
+          <option value="8" selected>8 FPS (推荐)</option>
+          <option value="12">12 FPS (高精度)</option>
+        </select>
+      </div>
+      <button class="start-btn go" id="startBtn" onclick="toggleStream()">开始检测</button>
+      <button class="assess-btn" id="assessBtn" onclick="requestAssessment()" style="display:none">
+        📋 发育评估报告
+      </button>
+    </div>
+
+    <div class="legend" id="legendSection">
+      <div class="legend-title">检测说明</div>
+      <div id="legendContent">
+        <div class="legend-item"><span class="legend-dot" style="background:#10b981"></span> 正常范围</div>
+        <div class="legend-item"><span class="legend-dot" style="background:#f59e0b"></span> 临界值</div>
+        <div class="legend-item"><span class="legend-dot" style="background:#ef4444"></span> 需要关注</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ─── Center Video ─── -->
+  <div class="video-area">
+    <video id="webcam" autoplay playsinline muted></video>
+    <canvas id="overlay"></canvas>
+    <div class="video-placeholder" id="placeholder">
+      <div class="big">📷</div>
+      <div>选择任务并点击「开始检测」<br>启动摄像头实时分析</div>
+    </div>
+    <div class="score-overlay" id="scoreOverlay"></div>
+    <div class="calibration-bar" id="calibrationBar">
+      正在校准面部基线...<br>请保持自然表情
+      <div class="bar"><div class="bar-fill" id="calBarFill" style="width:0%"></div></div>
+    </div>
+  </div>
+
+  <!-- ─── Right Features Panel ─── -->
+  <div class="features-panel">
+    <h3 id="featureTitle">实时特征</h3>
+    <div id="featureContent">
+      <div style="text-align:center;color:var(--text2);padding:40px 0;font-size:14px">
+        开始检测后显示实时数据
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+const WS_URL = `ws://${location.host}/ws/realtime`;
+let ws = null;
+let streaming = false;
+let currentTask = 'gross_motor';
+let sendInterval = null;
+let frameCount = 0;
+let lastFpsTime = Date.now();
+let fpsDisplay = 0;
+
+const video = document.getElementById('webcam');
+const overlay = document.getElementById('overlay');
+const ctx = overlay.getContext('2d');
+
+// ── Camera enumeration ──
+async function loadCameras() {
+  try {
+    await navigator.mediaDevices.getUserMedia({video:true});
+    const devices = await navigator.mediaDevices.enumerateDevices();
+    const sel = document.getElementById('cameraSelect');
+    sel.innerHTML = '';
+    const cams = devices.filter(d => d.kind === 'videoinput');
+    cams.forEach((d, i) => {
+      const opt = document.createElement('option');
+      opt.value = d.deviceId;
+      opt.textContent = d.label || `摄像头 ${i+1}`;
+      sel.appendChild(opt);
+    });
+  } catch(e) {
+    console.error('Camera access error:', e);
+  }
+}
+loadCameras();
+
+// ── Task selection ──
+document.querySelectorAll('.task-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    if (streaming) { stopStream(); }
+    document.querySelectorAll('.task-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    currentTask = btn.dataset.task;
+    updateLegend();
+    resetFeaturePanel();
+  });
+});
+
+function updateLegend() {
+  const legends = {
+    gross_motor: `
+      <div class="legend-item"><span class="legend-dot" style="background:#00ff00"></span> 骨骼关键点</div>
+      <div class="legend-item"><span class="legend-dot" style="background:#ff0"></span> 关节角度</div>
+      <div class="legend-item"><span class="legend-dot" style="background:#0ff"></span> 重心轨迹</div>`,
+    fine_motor: `
+      <div class="legend-item"><span class="legend-dot" style="background:#00ff00"></span> 手部关键点</div>
+      <div class="legend-item"><span class="legend-dot" style="background:#ff00ff"></span> 拇指-食指连线</div>
+      <div class="legend-item"><span class="legend-dot" style="background:#ff0"></span> 捏合检测</div>`,
+    joint_attention: `
+      <div class="legend-item"><span class="legend-dot" style="background:#00ff00"></span> 面部网格</div>
+      <div class="legend-item"><span class="legend-dot" style="background:#ff0"></span> 视线方向</div>
+      <div class="legend-item"><span class="legend-dot" style="background:#ff00ff"></span> 手指指向</div>`,
+    pain_monitor: `
+      <div class="legend-item"><span class="legend-dot" style="background:#00ff00"></span> 面部关键点</div>
+      <div class="legend-item"><span class="legend-dot" style="background:#ff0000"></span> AU 激活区域</div>`,
+  };
+  document.getElementById('legendContent').innerHTML = (legends[currentTask] || '') +
+    `<div class="legend-item"><span class="legend-dot" style="background:#10b981"></span> 正常</div>
+     <div class="legend-item"><span class="legend-dot" style="background:#f59e0b"></span> 临界</div>
+     <div class="legend-item"><span class="legend-dot" style="background:#ef4444"></span> 需关注</div>`;
+}
+
+// ── Toggle stream ──
+async function toggleStream() {
+  if (streaming) { stopStream(); } else { await startStream(); }
+}
+
+async function startStream() {
+  const camId = document.getElementById('cameraSelect').value;
+  try {
+    const stream = await navigator.mediaDevices.getUserMedia({
+      video: { deviceId: camId ? {exact:camId} : undefined, width:{ideal:640}, height:{ideal:480} }
+    });
+    video.srcObject = stream;
+    await video.play();
+  } catch(e) {
+    alert('无法访问摄像头: ' + e.message);
+    return;
+  }
+
+  document.getElementById('placeholder').style.display = 'none';
+  video.style.display = 'block';
+
+  // Resize overlay
+  video.addEventListener('loadedmetadata', resizeOverlay);
+  resizeOverlay();
+
+  // Connect WebSocket
+  const age = parseInt(document.getElementById('ageInput').value) || 24;
+  ws = new WebSocket(`${WS_URL}/${currentTask}`);
+
+  ws.onopen = () => {
+    ws.send(JSON.stringify({age_months: age}));
+    setConnected(true);
+  };
+
+  ws.onmessage = (evt) => {
+    const data = JSON.parse(evt.data);
+    if (data.type === 'ready') {
+      startSending();
+    } else if (data.type === 'result') {
+      handleResult(data);
+    } else if (data.type === 'assessment') {
+      showAssessmentModal(data);
+    } else if (data.type === 'error') {
+      console.error('Server error:', data.message);
+    }
+  };
+
+  ws.onclose = () => { setConnected(false); };
+  ws.onerror = () => { setConnected(false); };
+
+  const btn = document.getElementById('startBtn');
+  btn.textContent = '停止检测';
+  btn.className = 'start-btn stop';
+  document.getElementById('assessBtn').style.display = 'block';
+  streaming = true;
+}
+
+function stopStream() {
+  streaming = false;
+  if (sendInterval) { clearInterval(sendInterval); sendInterval = null; }
+  if (ws) { try { ws.send(JSON.stringify({type:'stop'})); ws.close(); } catch(e){} ws = null; }
+  if (video.srcObject) { video.srcObject.getTracks().forEach(t => t.stop()); video.srcObject = null; }
+  video.style.display = 'none';
+  document.getElementById('placeholder').style.display = '';
+  ctx.clearRect(0, 0, overlay.width, overlay.height);
+
+  const btn = document.getElementById('startBtn');
+  btn.textContent = '开始检测';
+  btn.className = 'start-btn go';
+  document.getElementById('assessBtn').style.display = 'none';
+  setConnected(false);
+
+  document.getElementById('scoreOverlay').style.display = 'none';
+  document.getElementById('calibrationBar').style.display = 'none';
+}
+
+function startSending() {
+  const fps = parseInt(document.getElementById('fpsSelect').value) || 8;
+  const interval = Math.round(1000 / fps);
+
+  const sendCanvas = document.createElement('canvas');
+  sendCanvas.width = 640;
+  sendCanvas.height = 480;
+  const sctx = sendCanvas.getContext('2d');
+
+  sendInterval = setInterval(() => {
+    if (!ws || ws.readyState !== WebSocket.OPEN) return;
+    sctx.drawImage(video, 0, 0, 640, 480);
+    const dataUrl = sendCanvas.toDataURL('image/jpeg', 0.7);
+    const b64 = dataUrl.split(',')[1];
+    ws.send(JSON.stringify({type:'frame', data:b64}));
+
+    frameCount++;
+    const now = Date.now();
+    if (now - lastFpsTime >= 1000) {
+      fpsDisplay = frameCount;
+      frameCount = 0;
+      lastFpsTime = now;
+      document.getElementById('fpsCounter').textContent = fpsDisplay + ' FPS';
+    }
+  }, interval);
+}
+
+function resizeOverlay() {
+  overlay.width = video.videoWidth || 640;
+  overlay.height = video.videoHeight || 480;
+}
+
+function setConnected(on) {
+  const dot = document.getElementById('statusDot');
+  const txt = document.getElementById('statusText');
+  dot.className = 'status-dot ' + (on ? 'on' : 'off');
+  txt.textContent = on ? '已连接' : '未连接';
+}
+
+// ── Handle results ──
+function handleResult(data) {
+  ctx.clearRect(0, 0, overlay.width, overlay.height);
+
+  // Draw landmarks
+  if (currentTask === 'gross_motor') {
+    drawPoseLandmarks(data.landmarks);
+    renderGrossMotorFeatures(data);
+  } else if (currentTask === 'fine_motor') {
+    drawHandLandmarks(data.landmarks);
+    renderFineMotorFeatures(data);
+  } else if (currentTask === 'joint_attention') {
+    if (data.face_landmarks) drawFaceMeshOutline(data.face_landmarks);
+    if (data.hand_landmarks) drawHandLandmarks(data.hand_landmarks);
+    renderAttentionFeatures(data);
+  } else if (currentTask === 'pain_monitor') {
+    drawFaceMeshOutline(data.landmarks);
+    renderPainFeatures(data);
+  }
+
+  // Score overlay
+  if (data.score && data.detected !== false) {
+    const el = document.getElementById('scoreOverlay');
+    const labels = {normal:'正常', borderline:'临界', at_risk:'需关注'};
+    el.textContent = labels[data.score] || data.score;
+    el.className = 'score-overlay ' + data.score;
+    el.style.display = 'block';
+  }
+
+  // Calibration bar
+  if (data.calibrating) {
+    const bar = document.getElementById('calibrationBar');
+    bar.style.display = 'block';
+    document.getElementById('calBarFill').style.width = (data.calibration_progress * 100) + '%';
+  } else {
+    document.getElementById('calibrationBar').style.display = 'none';
+  }
+}
+
+// ── Drawing functions ──
+const POSE_CONNECTIONS = [
+  [11,12],[11,13],[13,15],[12,14],[14,16],[11,23],[12,24],[23,24],
+  [23,25],[25,27],[24,26],[26,28],[27,29],[28,30],[29,31],[30,32]
+];
+
+function drawPoseLandmarks(lms) {
+  if (!lms || !lms.length) return;
+  const w = overlay.width, h = overlay.height;
+
+  ctx.strokeStyle = '#00ff00';
+  ctx.lineWidth = 2;
+  for (const [a, b] of POSE_CONNECTIONS) {
+    if (!lms[a] || !lms[b]) continue;
+    ctx.beginPath();
+    ctx.moveTo(lms[a][0]*w, lms[a][1]*h);
+    ctx.lineTo(lms[b][0]*w, lms[b][1]*h);
+    ctx.stroke();
+  }
+
+  ctx.fillStyle = '#00ff00';
+  for (let i = 11; i < 33; i++) {
+    if (!lms[i]) continue;
+    ctx.beginPath();
+    ctx.arc(lms[i][0]*w, lms[i][1]*h, 4, 0, Math.PI*2);
+    ctx.fill();
+  }
+}
+
+const HAND_CONNECTIONS = [
+  [0,1],[1,2],[2,3],[3,4],[0,5],[5,6],[6,7],[7,8],
+  [5,9],[9,10],[10,11],[11,12],[9,13],[13,14],[14,15],[15,16],
+  [13,17],[17,18],[18,19],[19,20],[0,17]
+];
+
+function drawHandLandmarks(lms) {
+  if (!lms || !lms.length) return;
+  const w = overlay.width, h = overlay.height;
+
+  ctx.strokeStyle = '#00ff00';
+  ctx.lineWidth = 2;
+  for (const [a, b] of HAND_CONNECTIONS) {
+    if (!lms[a] || !lms[b]) continue;
+    ctx.beginPath();
+    ctx.moveTo(lms[a][0]*w, lms[a][1]*h);
+    ctx.lineTo(lms[b][0]*w, lms[b][1]*h);
+    ctx.stroke();
+  }
+
+  // Thumb-index line
+  if (lms[4] && lms[8]) {
+    ctx.strokeStyle = '#ff00ff';
+    ctx.lineWidth = 3;
+    ctx.beginPath();
+    ctx.moveTo(lms[4][0]*w, lms[4][1]*h);
+    ctx.lineTo(lms[8][0]*w, lms[8][1]*h);
+    ctx.stroke();
+  }
+
+  ctx.fillStyle = '#00ff00';
+  for (const p of lms) {
+    ctx.beginPath();
+    ctx.arc(p[0]*w, p[1]*h, 3, 0, Math.PI*2);
+    ctx.fill();
+  }
+}
+
+const FACE_OVAL = [10,338,297,332,284,251,389,356,454,323,361,288,397,365,379,378,400,377,152,148,176,149,150,136,172,58,132,93,234,127,162,21,54,103,67,109,10];
+
+function drawFaceMeshOutline(lms) {
+  if (!lms || !lms.length) return;
+  const w = overlay.width, h = overlay.height;
+
+  ctx.strokeStyle = 'rgba(0,255,0,0.4)';
+  ctx.lineWidth = 1;
+  ctx.beginPath();
+  for (let i = 0; i < FACE_OVAL.length; i++) {
+    const idx = FACE_OVAL[i];
+    if (!lms[idx]) continue;
+    if (i === 0) ctx.moveTo(lms[idx][0]*w, lms[idx][1]*h);
+    else ctx.lineTo(lms[idx][0]*w, lms[idx][1]*h);
+  }
+  ctx.closePath();
+  ctx.stroke();
+
+  // Eyes
+  const leftEye = [33,133,159,145];
+  const rightEye = [263,362,386,374];
+  ctx.strokeStyle = '#00ffff';
+  ctx.lineWidth = 2;
+  for (const eye of [leftEye, rightEye]) {
+    ctx.beginPath();
+    for (let i = 0; i < eye.length; i++) {
+      const p = lms[eye[i]];
+      if (!p) continue;
+      if (i === 0) ctx.moveTo(p[0]*w, p[1]*h);
+      else ctx.lineTo(p[0]*w, p[1]*h);
+    }
+    ctx.closePath();
+    ctx.stroke();
+  }
+
+  // Nose
+  if (lms[1]) {
+    ctx.fillStyle = '#ffff00';
+    ctx.beginPath();
+    ctx.arc(lms[1][0]*w, lms[1][1]*h, 3, 0, Math.PI*2);
+    ctx.fill();
+  }
+}
+
+// ── Feature panel renderers ──
+function resetFeaturePanel() {
+  document.getElementById('featureContent').innerHTML =
+    '<div style="text-align:center;color:var(--text2);padding:40px 0;font-size:14px">开始检测后显示实时数据</div>';
+}
+
+function fv(val, thresholds) {
+  // thresholds = [warnLow, good, warnHigh] or [good, warn]
+  if (thresholds && thresholds.length === 2) {
+    return val >= thresholds[0] ? 'normal' : (val >= thresholds[1] ? 'warning' : 'danger');
+  }
+  return 'normal';
+}
+
+function renderGrossMotorFeatures(d) {
+  if (d.calibrating) {
+    document.getElementById('featureTitle').textContent = '粗大运动 — 校准中';
+    document.getElementById('featureContent').innerHTML = `
+      <div style="text-align:center;padding:30px 0">
+        <div style="font-size:32px;margin-bottom:12px">📐</div>
+        <div style="font-size:14px">地面校准中... ${Math.round((d.calibration_progress||0)*100)}%</div>
+        <div style="font-size:12px;color:var(--text2);margin-top:6px">请站在摄像头前保持不动</div>
+      </div>`;
+    return;
+  }
+  if (!d.features || Object.keys(d.features).length === 0) { renderEmpty(); return; }
+  const f = d.features;
+
+  const movementLabels = {
+    standing:'站立', walking:'行走', squatting:'下蹲', jumping:'跳跃',
+  };
+  let moveText = movementLabels[f.movement] || f.movement;
+  if (f.movement && f.movement.includes('one_leg')) {
+    moveText = '单脚站立 (' + (f.support_side === 'left' ? '左脚支撑' : '右脚支撑') + ')';
+  }
+  const moveColor = f.movement === 'standing' ? '' : 'normal';
+
+  document.getElementById('featureTitle').textContent = '粗大运动 — 实时特征';
+  document.getElementById('featureContent').innerHTML = `
+    <div class="feature-card" style="text-align:center;padding:16px;margin-bottom:10px">
+      <div class="feature-label">当前动作</div>
+      <div class="feature-value ${moveColor}" style="font-size:24px">${moveText}</div>
+    </div>
+
+    <div class="feature-row">
+      <div class="feature-card">
+        <div class="feature-label">左脚离地</div>
+        <div class="feature-value ${f.left_foot_lift > 0.01 ? 'normal' : ''}">${f.left_foot_lift > 0.01 ? '↑ ' + (f.left_foot_lift * 100).toFixed(0) + '%' : '— 着地'}</div>
+      </div>
+      <div class="feature-card">
+        <div class="feature-label">右脚离地</div>
+        <div class="feature-value ${f.right_foot_lift > 0.01 ? 'normal' : ''}">${f.right_foot_lift > 0.01 ? '↑ ' + (f.right_foot_lift * 100).toFixed(0) + '%' : '— 着地'}</div>
+      </div>
+    </div>
+
+    <div class="feature-row">
+      <div class="feature-card">
+        <div class="feature-label">左膝角度</div>
+        <div class="feature-value">${f.left_knee_angle}°</div>
+      </div>
+      <div class="feature-card">
+        <div class="feature-label">右膝角度</div>
+        <div class="feature-value">${f.right_knee_angle}°</div>
+      </div>
+    </div>
+    <div class="feature-row">
+      <div class="feature-card">
+        <div class="feature-label">左肘角度</div>
+        <div class="feature-value">${f.left_elbow_angle}°</div>
+      </div>
+      <div class="feature-card">
+        <div class="feature-label">右肘角度</div>
+        <div class="feature-value">${f.right_elbow_angle}°</div>
+      </div>
+    </div>
+
+    <div class="feature-row">
+      <div class="feature-card">
+        <div class="feature-label">躯干前倾</div>
+        <div class="feature-value ${f.trunk_lean > 25 ? 'warning' : ''}">${f.trunk_lean}°</div>
+      </div>
+      <div class="feature-card">
+        <div class="feature-label">重心稳定性</div>
+        <div class="feature-value ${f.com_stability > 0.03 ? 'warning' : ''}">${f.com_stability}</div>
+      </div>
+    </div>
+
+    <div class="feature-card">
+      <div class="feature-label">手臂状态</div>
+      <div class="feature-value">${{both_raised:'双手举起',left_raised:'左手举起',right_raised:'右手举起','':'自然下垂'}[f.arms_state] || '自然下垂'}</div>
+    </div>
+
+    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px;margin-top:8px">
+      <div class="feature-card" style="text-align:center;padding:10px">
+        <div class="feature-label">单脚站</div>
+        <div class="feature-value" style="font-size:18px">${f.max_single_leg_duration}s</div>
+      </div>
+      <div class="feature-card" style="text-align:center;padding:10px">
+        <div class="feature-label">下蹲</div>
+        <div class="feature-value" style="font-size:18px">${f.squat_count}次</div>
+      </div>
+      <div class="feature-card" style="text-align:center;padding:10px">
+        <div class="feature-label">跳跃</div>
+        <div class="feature-value" style="font-size:18px">${f.jump_count}次</div>
+      </div>
+    </div>
+
+    <div class="feature-row" style="margin-top:8px">
+      <div class="feature-card">
+        <div class="feature-label">步数</div>
+        <div class="feature-value">${f.step_count}</div>
+      </div>
+      <div class="feature-card">
+        <div class="feature-label">步频 (Hz)</div>
+        <div class="feature-value">${f.step_frequency_hz}</div>
+      </div>
+    </div>`;
+}
+
+function renderFineMotorFeatures(d) {
+  if (!d.features) { renderEmpty(); return; }
+  const f = d.features;
+  document.getElementById('featureTitle').textContent = '精细运动 — 实时特征';
+  document.getElementById('featureContent').innerHTML = `
+    <div class="feature-card" style="text-align:center;padding:20px">
+      <div class="feature-label">拇指-食指距离</div>
+      <div class="feature-value" style="font-size:36px;${f.is_pinching ? 'color:var(--success)' : ''}">${f.thumb_index_distance}</div>
+      <div style="font-size:13px;margin-top:4px;color:${f.is_pinching ? 'var(--success)' : 'var(--text2)'}">
+        ${f.is_pinching ? '🤏 捏合中' : '手指张开'}
+      </div>
+    </div>
+    <div class="feature-row">
+      <div class="feature-card">
+        <div class="feature-label">捏合次数</div>
+        <div class="feature-value normal">${f.grasp_count}</div>
+      </div>
+      <div class="feature-card">
+        <div class="feature-label">手指张开度</div>
+        <div class="feature-value">${f.finger_spread}</div>
+      </div>
+    </div>
+    <div class="feature-row">
+      <div class="feature-card">
+        <div class="feature-label">释放次数</div>
+        <div class="feature-value">${f.release_count}</div>
+      </div>
+      <div class="feature-card">
+        <div class="feature-label">放置动作</div>
+        <div class="feature-value">${f.placement_count}</div>
+      </div>
+    </div>
+    <div class="feature-card">
+      <div class="feature-label">手掌状态</div>
+      <div class="feature-value">${f.hand_open ? '🖐 张开' : '✊ 握拳'}</div>
+    </div>`;
+}
+
+function renderAttentionFeatures(d) {
+  if (!d.features || Object.keys(d.features).length === 0) { renderEmpty(); return; }
+  const f = d.features;
+  document.getElementById('featureTitle').textContent = '共同注意力 — 实时特征';
+
+  let gazeHtml = '';
+  if (f.gaze_direction !== undefined) {
+    const ox = (f.eye_offset_x || 0) * 200;
+    const oy = (f.eye_offset_y || 0) * 200;
+    gazeHtml = `
+      <div class="feature-card" style="text-align:center">
+        <div class="feature-label">视线方向</div>
+        <div class="gaze-indicator">
+          <div class="gaze-dot" style="transform:translate(calc(-50% + ${ox}px), calc(-50% + ${oy}px))"></div>
+          <span class="gaze-label top">上</span>
+          <span class="gaze-label bottom">下</span>
+          <span class="gaze-label left">左</span>
+          <span class="gaze-label right">右</span>
+        </div>
+        <div style="font-size:16px;font-weight:700;margin-top:4px">${gazeLabel(f.gaze_direction)}</div>
+      </div>`;
+  }
+
+  let headHtml = '';
+  if (f.head_yaw !== undefined) {
+    headHtml = `
+      <div class="feature-row">
+        <div class="feature-card">
+          <div class="feature-label">头部偏航 (Yaw)</div>
+          <div class="feature-value">${f.head_yaw}°</div>
+        </div>
+        <div class="feature-card">
+          <div class="feature-label">头部俯仰 (Pitch)</div>
+          <div class="feature-value">${f.head_pitch}°</div>
+        </div>
+      </div>
+      <div class="feature-row">
+        <div class="feature-card">
+          <div class="feature-label">点头次数</div>
+          <div class="feature-value">${f.nod_count}</div>
+        </div>
+        <div class="feature-card">
+          <div class="feature-label">摇头次数</div>
+          <div class="feature-value">${f.shake_count}</div>
+        </div>
+      </div>`;
+  }
+
+  let pointHtml = '';
+  if (f.is_pointing !== undefined) {
+    pointHtml = `
+      <div class="feature-card">
+        <div class="feature-label">指向手势</div>
+        <div class="feature-value ${f.is_pointing ? 'normal' : ''}">
+          ${f.is_pointing ? '👆 检测到指向' : '— 未检测到'}
+        </div>
+        <div style="font-size:12px;color:var(--text2);margin-top:4px">指向比例: ${f.pointing_ratio}</div>
+      </div>`;
+  }
+
+  document.getElementById('featureContent').innerHTML = gazeHtml + headHtml + pointHtml +
+    `<div class="feature-card">
+      <div class="feature-label">视线转移次数</div>
+      <div class="feature-value">${f.gaze_shift_count || 0}</div>
+    </div>`;
+}
+
+function renderPainFeatures(d) {
+  document.getElementById('featureTitle').textContent = '疼痛监测 — NFCS';
+
+  if (d.calibrating) {
+    document.getElementById('featureContent').innerHTML = `
+      <div style="text-align:center;padding:30px 0">
+        <div style="font-size:32px;margin-bottom:12px">⏳</div>
+        <div style="font-size:14px">校准中... ${Math.round((d.calibration_progress||0)*100)}%</div>
+        <div style="font-size:12px;color:var(--text2);margin-top:6px">请让儿童保持自然表情</div>
+      </div>`;
+    return;
+  }
+
+  if (!d.au_activations || Object.keys(d.au_activations).length === 0) { renderEmpty(); return; }
+
+  const auNames = {AU4:'眉弓收缩',AU6:'脸颊上提',AU7:'眼睑收紧',AU9:'鼻唇沟',AU10:'上唇提升',AU20:'唇拉伸',AU25:'唇张开',AU43:'闭眼'};
+  let auHtml = '<div class="au-section">';
+  for (const [code, val] of Object.entries(d.au_activations)) {
+    const pct = Math.round(val * 100);
+    const color = val > 0.6 ? 'var(--danger)' : val > 0.3 ? 'var(--warning)' : 'var(--success)';
+    auHtml += `
+      <div class="au-row">
+        <div class="au-label">${code} ${auNames[code]||''}</div>
+        <div class="au-track"><div class="au-fill" style="width:${pct}%;background:${color}"></div></div>
+        <div class="au-val">${pct}%</div>
+      </div>`;
+  }
+  auHtml += '</div>';
+
+  const nfcs = d.nfcs_score || 0;
+  const nfcsColor = nfcs >= 3 ? 'danger' : nfcs >= 1.5 ? 'warning' : 'normal';
+
+  document.getElementById('featureContent').innerHTML = `
+    <div class="feature-card" style="text-align:center;padding:20px">
+      <div class="feature-label">NFCS 疼痛评分</div>
+      <div class="feature-value ${nfcsColor}" style="font-size:48px">${nfcs}</div>
+      <div style="font-size:12px;color:var(--text2)">&lt;1.5 正常 | 1.5-3 临界 | &ge;3 疼痛</div>
+    </div>
+    <h4 style="font-size:12px;color:var(--text2);margin:12px 0 8px;text-transform:uppercase">AU 单元激活</h4>
+    ${auHtml}`;
+}
+
+function renderEmpty() {
+  document.getElementById('featureContent').innerHTML =
+    '<div style="text-align:center;color:var(--text2);padding:30px 0">未检测到目标</div>';
+}
+
+function gazeLabel(dir) {
+  const map = {center:'中心',left:'左',right:'右',up:'上',down:'下',
+    left_up:'左上',right_up:'右上',left_down:'左下',right_down:'右下'};
+  return map[dir] || dir;
+}
+
+updateLegend();
+
+// ═══════════════════════════════════════════════════
+// Assessment
+// ═══════════════════════════════════════════════════
+
+function requestAssessment() {
+  if (!ws || ws.readyState !== WebSocket.OPEN) {
+    alert('请先开始检测并采集数据后再生成评估');
+    return;
+  }
+  ws.send(JSON.stringify({type: 'assess'}));
+}
+
+function showAssessmentModal(data) {
+  const existing = document.querySelector('.modal-overlay');
+  if (existing) existing.remove();
+
+  const classLabels = {
+    normal: '发育正常', advanced: '发育超前', borderline: '边界观察',
+    mild_delay: '轻度落后', significant_delay: '显著落后', at_risk_asd: 'ASD风险',
+  };
+  const classEmojis = {
+    normal: '✅', advanced: '🌟', borderline: '🔶',
+    mild_delay: '⚠️', significant_delay: '🚨', at_risk_asd: '🟣',
+  };
+  const cls = data.overall_classification;
+  const clsLabel = classLabels[cls] || cls;
+  const clsEmoji = classEmojis[cls] || '';
+  const clsClass = 'cls-' + cls;
+
+  let domainsHtml = '';
+  for (const d of (data.domain_scores || [])) {
+    const barColor = d.score_pct >= 70 ? '#10b981' : d.score_pct >= 40 ? '#f59e0b' : '#ef4444';
+    const ageDiff = d.age_difference_months;
+    const ageText = ageDiff > 0 ? `超前${ageDiff}个月` : ageDiff < 0 ? `落后${Math.abs(ageDiff)}个月` : '符合月龄';
+    const ageColor = ageDiff > 0 ? '#3b82f6' : ageDiff < 0 ? '#ef4444' : '#10b981';
+
+    let milestonesHtml = '';
+    if (d.achieved_milestones.length) {
+      milestonesHtml += d.achieved_milestones.map(m => `<span class="milestone-achieved">✓ ${m}</span>`).join('  ');
+    }
+    if (d.missing_milestones.length) {
+      milestonesHtml += '  ' + d.missing_milestones.map(m => `<span class="milestone-missing">✗ ${m}</span>`).join('  ');
+    }
+    if (d.advanced_milestones.length) {
+      milestonesHtml += '  ' + d.advanced_milestones.map(m => `<span class="milestone-advanced">★ ${m}</span>`).join('  ');
+    }
+
+    domainsHtml += `
+      <div class="domain-card">
+        <div class="domain-header">
+          <span class="domain-name">${d.domain_cn}</span>
+          <span class="domain-age" style="color:${ageColor}">${ageText} (${d.developmental_age_months}月龄水平)</span>
+        </div>
+        <div class="domain-bar"><div class="domain-fill" style="width:${d.score_pct}%;background:${barColor}"></div></div>
+        <div style="display:flex;justify-content:space-between;font-size:12px;color:var(--text2);margin-bottom:6px">
+          <span>达成 ${d.achieved_count}/${d.expected_count}</span>
+          <span style="font-weight:700">${d.score_pct}%</span>
+        </div>
+        <div class="domain-milestones">${milestonesHtml || '<span style="color:var(--text2)">暂无数据</span>'}</div>
+      </div>`;
+  }
+
+  // ASD section
+  let asdHtml = '';
+  if (data.asd_screening) {
+    const asd = data.asd_screening;
+    const riskLabels = {low:'低风险', medium:'中风险', high:'高风险'};
+    const riskClass = 'asd-' + asd.risk_level;
+    asdHtml = `
+      <div class="asd-card">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
+          <span style="font-weight:700;font-size:15px">ASD 自闭症谱系筛查 (M-CHAT-R)</span>
+          <span class="asd-risk ${riskClass}">${riskLabels[asd.risk_level]}</span>
+        </div>
+        <div style="font-size:13px;color:var(--text2);margin-bottom:8px">
+          评估项: ${asd.items_assessed} | 未通过: ${asd.items_failed} | 关键项未通过: ${asd.critical_items_failed}
+        </div>
+        ${asd.failed_items.length ? `<div style="font-size:13px">
+          <div style="color:var(--text2);margin-bottom:4px">未通过项目:</div>
+          ${asd.failed_items.map(i => `<div style="color:var(--warning);padding:2px 0">• ${i}</div>`).join('')}
+        </div>` : ''}
+        ${asd.note ? `<div style="font-size:12px;color:var(--text2);margin-top:6px;font-style:italic">${asd.note}</div>` : ''}
+      </div>`;
+  }
+
+  // Recommendations
+  let recHtml = '';
+  if (data.recommendations && data.recommendations.length) {
+    recHtml = `<ul class="rec-list">${data.recommendations.map(r => `<li>${r}</li>`).join('')}</ul>`;
+  }
+
+  const modal = document.createElement('div');
+  modal.className = 'modal-overlay';
+  modal.onclick = (e) => { if (e.target === modal) modal.remove(); };
+  modal.innerHTML = `
+    <div class="modal">
+      <button class="modal-close" onclick="this.closest('.modal-overlay').remove()">&times;</button>
+
+      <div style="text-align:center;margin-bottom:24px">
+        <div style="font-size:14px;color:var(--text2);margin-bottom:8px">发育评估报告 — ${data.child_age_months}月龄</div>
+        <div class="classification-badge ${clsClass}">${clsEmoji} ${clsLabel}</div>
+        <div style="margin-top:10px;font-size:14px;color:var(--text2)">${data.age_equivalent_label}</div>
+        <div style="margin-top:6px">
+          <span style="font-size:36px;font-weight:800;font-family:monospace;color:var(--text)">${data.overall_score}</span>
+          <span style="font-size:14px;color:var(--text2)"> / 100</span>
+        </div>
+      </div>
+
+      <h4 style="font-size:14px;color:var(--text2);margin-bottom:10px;text-transform:uppercase;letter-spacing:1px">各领域评分</h4>
+      ${domainsHtml}
+
+      ${asdHtml}
+
+      <h4 style="font-size:14px;color:var(--text2);margin:16px 0 10px;text-transform:uppercase;letter-spacing:1px">建议</h4>
+      ${recHtml}
+
+      <div class="disclaimer-box">${data.disclaimer}</div>
+
+      <div style="text-align:center;margin-top:16px">
+        <button onclick="window.print()" style="padding:8px 24px;border-radius:8px;border:1px solid var(--border);background:transparent;color:var(--text);cursor:pointer;font-size:13px">🖨 打印报告</button>
+      </div>
+    </div>`;
+
+  document.body.appendChild(modal);
+}
+</script>
+</body>
+</html>
