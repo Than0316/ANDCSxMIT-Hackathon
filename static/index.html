@@ -26,6 +26,27 @@ body { font-family: -apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif; back
 @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.5} }
 .fps-counter { font-size:13px; color:rgba(255,255,255,0.7); font-family:monospace; }
 
+.top-nav {
+  display:flex;
+  gap:8px;
+  margin-right:12px;
+}
+.top-nav-btn {
+  border:1px solid rgba(255,255,255,0.35);
+  background:rgba(255,255,255,0.12);
+  color:#fff;
+  border-radius:999px;
+  padding:6px 12px;
+  font-size:12px;
+  font-weight:700;
+  cursor:pointer;
+}
+.top-nav-btn.active {
+  background:#fff;
+  color:#1e293b;
+  border-color:#fff;
+}
+
 /* Layout */
 .app { display:grid; grid-template-columns:260px 1fr 340px; height:calc(100vh - 56px); }
 @media(max-width:1100px) { .app { grid-template-columns:200px 1fr 280px; } }
@@ -89,6 +110,201 @@ canvas#overlay { position:absolute; top:0; left:0; width:100%; height:100%; poin
 .features-panel { background:var(--card); border-left:1px solid var(--border); padding:16px; overflow-y:auto; }
 .features-panel h3 { font-size:13px; text-transform:uppercase; color:var(--text2); margin-bottom:12px; letter-spacing:1px; }
 
+.dashboard-panel {
+  background:var(--card2);
+  border:1px solid var(--border);
+  border-radius:10px;
+  padding:12px;
+  margin-bottom:12px;
+}
+.dashboard-title {
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  font-size:12px;
+  color:var(--text2);
+  text-transform:uppercase;
+  letter-spacing:1px;
+  margin-bottom:10px;
+}
+.assessment-chip {
+  font-size:11px;
+  color:#bfdbfe;
+  background:rgba(59,130,246,0.2);
+  border:1px solid rgba(59,130,246,0.4);
+  border-radius:999px;
+  padding:3px 8px;
+}
+.dashboard-grid {
+  display:grid;
+  grid-template-columns:1fr 1fr 1fr;
+  gap:8px;
+}
+.dash-card {
+  background:var(--bg);
+  border-radius:8px;
+  padding:8px;
+  text-align:center;
+}
+.dash-value {
+  font-size:20px;
+  font-weight:700;
+  font-family:monospace;
+}
+.dash-label {
+  font-size:11px;
+  color:var(--text2);
+  margin-top:2px;
+}
+.history-list {
+  margin-top:10px;
+  display:flex;
+  flex-direction:column;
+  gap:6px;
+  max-height:180px;
+  overflow:auto;
+}
+.history-row {
+  display:grid;
+  grid-template-columns:1fr auto;
+  gap:10px;
+  background:var(--bg);
+  border-radius:8px;
+  padding:8px;
+}
+.history-main { font-size:12px; }
+.history-sub { color:var(--text2); font-size:11px; margin-top:2px; }
+.history-score { font-size:14px; font-weight:700; font-family:monospace; }
+
+.insight-tabs {
+  display:flex;
+  gap:8px;
+  margin-bottom:12px;
+}
+.insight-tab {
+  flex:1;
+  border:1px solid var(--border);
+  background:var(--card2);
+  color:var(--text2);
+  border-radius:8px;
+  padding:8px 10px;
+  font-size:12px;
+  font-weight:700;
+  cursor:pointer;
+}
+.insight-tab.active {
+  background:var(--primary);
+  color:#fff;
+  border-color:var(--primary);
+}
+.history-data-view {
+  background:var(--card2);
+  border:1px solid var(--border);
+  border-radius:10px;
+  padding:12px;
+}
+.profile-row {
+  margin-bottom:10px;
+}
+.profile-row label {
+  display:block;
+  font-size:12px;
+  color:var(--text2);
+  margin-bottom:4px;
+}
+.profile-row select {
+  width:100%;
+  padding:8px;
+  border-radius:8px;
+  border:1px solid var(--border);
+  background:var(--bg);
+  color:var(--text);
+}
+.metric-grid {
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:8px;
+  margin:10px 0;
+}
+.metric-card {
+  background:var(--bg);
+  border-radius:8px;
+  padding:10px;
+}
+.metric-name {
+  font-size:11px;
+  color:var(--text2);
+}
+.metric-value {
+  font-size:20px;
+  font-weight:700;
+  font-family:monospace;
+  margin-top:3px;
+}
+.history-note {
+  font-size:12px;
+  color:var(--text2);
+  margin-top:8px;
+}
+
+.chart-toolbar {
+  display:grid;
+  grid-template-columns:1fr;
+  gap:10px;
+  margin:8px 0 10px;
+}
+.chart-toolbar label {
+  display:block;
+  font-size:12px;
+  color:var(--text2);
+  margin-bottom:4px;
+}
+.chart-toolbar select {
+  width:100%;
+  padding:8px;
+  border-radius:8px;
+  border:1px solid var(--border);
+  background:var(--bg);
+  color:var(--text);
+}
+.chart-legend {
+  display:flex;
+  gap:12px;
+  font-size:11px;
+  color:var(--text2);
+  margin:8px 0 4px;
+}
+.legend-chip {
+  display:inline-flex;
+  align-items:center;
+  gap:6px;
+}
+.legend-line,
+.legend-dot {
+  display:inline-block;
+}
+.legend-line {
+  width:14px;
+  height:2px;
+}
+.legend-dot {
+  width:8px;
+  height:8px;
+  border-radius:50%;
+}
+.chart-wrap {
+  width:100%;
+  height:240px;
+  background:var(--bg);
+  border-radius:10px;
+  border:1px solid var(--border);
+  padding:8px;
+}
+.trend-svg {
+  width:100%;
+  height:100%;
+}
+
 .feature-card {
   background:var(--card2); border-radius:8px; padding:12px; margin-bottom:10px;
 }
@@ -126,12 +342,6 @@ canvas#overlay { position:absolute; top:0; left:0; width:100%; height:100%; poin
 .gaze-label.bottom { bottom:4px; left:50%; transform:translateX(-50%); }
 .gaze-label.left { left:4px; top:50%; transform:translateY(-50%); }
 .gaze-label.right { right:4px; top:50%; transform:translateY(-50%); }
-
-/* Skeleton legend */
-.legend { margin-top:16px; padding-top:12px; border-top:1px solid var(--border); }
-.legend-title { font-size:11px; color:var(--text2); margin-bottom:8px; }
-.legend-item { font-size:12px; display:flex; align-items:center; gap:6px; margin-bottom:4px; }
-.legend-dot { width:8px; height:8px; border-radius:50%; }
 
 /* Assessment button */
 .assess-btn {
@@ -247,6 +457,12 @@ canvas#overlay { position:absolute; top:0; left:0; width:100%; height:100%; poin
 }
 .upload-btn:hover { background:#4338ca; }
 .upload-btn:disabled { background:var(--card2); color:var(--text2); cursor:not-allowed; }
+.upload-btn.secondary {
+  margin-top:8px;
+  background:var(--card2);
+  border:1px solid var(--border);
+  color:var(--text);
+}
 
 .upload-progress { margin-top:10px; display:none; }
 .upload-progress-bar { height:6px; background:var(--card2); border-radius:3px; overflow:hidden; }
@@ -266,6 +482,21 @@ canvas#overlay { position:absolute; top:0; left:0; width:100%; height:100%; poin
 }
 .playback-slider { width:160px; accent-color:var(--primary); }
 .playback-time { font-size:12px; color:rgba(255,255,255,0.8); font-family:monospace; min-width:70px; }
+
+.history-page {
+  display:none;
+  height:calc(100vh - 56px);
+  overflow:auto;
+  padding:20px;
+}
+.history-page.visible { display:block; }
+.history-shell {
+  max-width:980px;
+  margin:0 auto;
+  display:grid;
+  grid-template-columns:1fr;
+  gap:14px;
+}
 </style>
 </head>
 <body>
@@ -276,38 +507,42 @@ canvas#overlay { position:absolute; top:0; left:0; width:100%; height:100%; poin
     <div class="header-sub">Real-time video analysis - MediaPipe + Rule Engine</div>
   </div>
   <div class="header-right">
+    <div class="top-nav">
+      <button class="top-nav-btn active" id="pageBtnAssessment" onclick="switchPage('assessment')">Assessment</button>
+      <button class="top-nav-btn" id="pageBtnHistory" onclick="switchPage('history')">Historical Data</button>
+    </div>
     <span class="fps-counter" id="fpsCounter">-- FPS</span>
     <span><span class="status-dot off" id="statusDot"></span> <span id="statusText" style="font-size:13px">Disconnected</span></span>
   </div>
 </div>
 
-<div class="app">
+<div class="app" id="assessmentPage">
 
   <!-- ─── Left Sidebar ─── -->
   <div class="sidebar">
     <div class="sidebar-group">
-      <h3>Assessment Tasks</h3>
+      <h3>List of Assessment</h3>
       <button class="task-btn active" data-task="gross_motor">
-        <span class="icon">🏃</span> Gross Motor
+        <span class="icon">🤱</span> Tummy time session
       </button>
       <button class="task-btn" data-task="fine_motor">
-        <span class="icon">🤏</span> Fine Motor
+        <span class="icon">🧸</span> Reaching for a toy
       </button>
-      <button class="task-btn" data-task="joint_attention">
-        <span class="icon">👀</span> Joint Attention
-      </button>
-      <button class="task-btn" data-task="pain_monitor">
-        <span class="icon">😣</span> Pain Monitor
+      <button class="task-btn" data-task="gross_motor">
+        <span class="icon">🔄</span> Rolling attempt
       </button>
       <button class="task-btn" data-task="motion_monitor">
-        <span class="icon">🦾</span> Motion Monitor
+        <span class="icon">🪑</span> Supported sitting
+      </button>
+      <button class="task-btn" data-task="motion_monitor">
+        <span class="icon">🦾</span> Body movement
       </button>
     </div>
 
     <div class="config-section">
       <h3>Settings</h3>
       <!-- Mode tabs (shown only for motion_monitor) -->
-      <div class="mode-tabs" id="modeTabs" style="display:none">
+      <div class="mode-tabs" id="modeTabs">
         <button class="mode-tab active" id="tabLive" onclick="switchMode('live')">📷 Live</button>
         <button class="mode-tab" id="tabUpload" onclick="switchMode('upload')">📂 Upload</button>
       </div>
@@ -331,6 +566,7 @@ canvas#overlay { position:absolute; top:0; left:0; width:100%; height:100%; poin
           </select>
         </div>
         <button class="upload-btn" id="uploadRunBtn" onclick="runUploadTracking()" disabled>▶ Analyze Video</button>
+        <button class="upload-btn secondary" id="saveProcessedBtn" onclick="saveProcessedVideo()" disabled>💾 Save Processed Video</button>
         <div class="upload-progress" id="uploadProgress">
           <div class="upload-progress-bar"><div class="upload-progress-fill" id="uploadProgressFill" style="width:0%"></div></div>
           <div class="upload-status" id="uploadStatus">Processing...</div>
@@ -362,24 +598,13 @@ canvas#overlay { position:absolute; top:0; left:0; width:100%; height:100%; poin
       </div><!-- /liveSettings -->
     </div><!-- /config-section -->
 
-    <div class="legend" id="legendSection">
-      <div class="legend-title">Legend</div>
-      <div id="legendContent">
-        <div class="legend-item"><span class="legend-dot" style="background:#10b981"></span> Normal Range</div>
-        <div class="legend-item"><span class="legend-dot" style="background:#f59e0b"></span> Borderline</div>
-        <div class="legend-item"><span class="legend-dot" style="background:#ef4444"></span> Needs Attention</div>
-      </div>
-    </div>
   </div>
 
   <!-- ─── Center Video ─── -->
   <div class="video-area">
     <video id="webcam" autoplay playsinline muted></video>
     <canvas id="overlay"></canvas>
-    <div class="video-placeholder" id="placeholder">
-      <div class="big">📷</div>
-      <div>Select a task and click "Start Assessment"<br>to begin real-time camera analysis</div>
-    </div>
+    <div class="video-placeholder" id="placeholder"></div>
     <div class="score-overlay" id="scoreOverlay"></div>
     <div class="calibration-bar" id="calibrationBar">
       Calibrating facial baseline...<br>Please keep a natural expression
@@ -395,6 +620,14 @@ canvas#overlay { position:absolute; top:0; left:0; width:100%; height:100%; poin
 
   <!-- ─── Right Features Panel ─── -->
   <div class="features-panel">
+    <div class="dashboard-panel">
+      <div class="dashboard-title">
+        <span>Historical Dashboard</span>
+        <span class="assessment-chip" id="currentAssessmentChip">Tummy time session</span>
+      </div>
+      <div class="dashboard-grid" id="dashboardSummary"></div>
+      <div class="history-list" id="historyList"></div>
+    </div>
     <h3 id="featureTitle">Real-Time Features</h3>
     <div id="featureContent">
       <div style="text-align:center;color:var(--text2);padding:40px 0;font-size:14px">
@@ -403,6 +636,43 @@ canvas#overlay { position:absolute; top:0; left:0; width:100%; height:100%; poin
     </div>
   </div>
 
+</div>
+
+<div class="history-page" id="historyPage">
+  <div class="history-shell">
+    <div class="history-data-view">
+      <div class="dashboard-title">
+        <span>Baby Historical Data</span>
+      </div>
+      <div class="profile-row">
+        <label>Baby Profile</label>
+        <select id="babyProfileSelect" onchange="renderHistoricalData(this.value)"></select>
+      </div>
+
+      <div class="chart-toolbar">
+        <div>
+          <label>Trend Metric</label>
+          <select id="historyMetricSelect" onchange="renderHistoricalData(document.getElementById('babyProfileSelect').value)">
+            <option value="time_to_reach_toy_s">Time to Reach Toy (s)</option>
+            <option value="rolling_success_pct">Rolling Success (%)</option>
+            <option value="tummy_time_min">Tummy Time / Day (min)</option>
+            <option value="supported_sitting_sec">Supported Sitting (s)</option>
+          </select>
+        </div>
+      </div>
+
+      <div id="trendChartArea"></div>
+
+      <div class="metric-grid" id="profileMetricGrid"></div>
+
+      <div class="feature-card" style="margin:0">
+        <div class="feature-label">Recent Weekly Trend</div>
+        <div id="profileTrendText" class="history-note"></div>
+      </div>
+
+      <div class="history-note" id="profileUpdatedAt"></div>
+    </div>
+  </div>
 </div>
 
 <script>
@@ -414,10 +684,246 @@ let sendInterval = null;
 let frameCount = 0;
 let lastFpsTime = Date.now();
 let fpsDisplay = 0;
+const HISTORY_KEY = 'cdcAssessmentHistoryV1';
 
 const video = document.getElementById('webcam');
 const overlay = document.getElementById('overlay');
 const ctx = overlay.getContext('2d');
+const BABY_PROFILES = {
+  baby_ava: {
+    name: 'Ava (10 months)',
+    time_to_reach_toy_s: 3.8,
+    rolling_success_pct: 72,
+    tummy_time_min: 18,
+    supported_sitting_sec: 95,
+    weekly_sessions: 5,
+    trend: 'Reaching speed improved by 18% this week. Sitting endurance is stable.',
+    updated_at: 'Updated: 2026-04-17',
+    series: {
+      time_to_reach_toy_s: [5.2, 4.9, 4.4, 4.1, 4.0, 3.9, 3.8],
+      rolling_success_pct: [54, 58, 61, 66, 69, 71, 72],
+      tummy_time_min: [12, 13, 14, 15, 16, 17, 18],
+      supported_sitting_sec: [62, 68, 74, 79, 85, 90, 95],
+    },
+  },
+  baby_liam: {
+    name: 'Liam (13 months)',
+    time_to_reach_toy_s: 2.9,
+    rolling_success_pct: 81,
+    tummy_time_min: 22,
+    supported_sitting_sec: 130,
+    weekly_sessions: 6,
+    trend: 'Rolling attempts are consistent. Reaching latency slightly improved.',
+    updated_at: 'Updated: 2026-04-18',
+    series: {
+      time_to_reach_toy_s: [3.6, 3.4, 3.3, 3.2, 3.1, 3.0, 2.9],
+      rolling_success_pct: [70, 73, 75, 77, 79, 80, 81],
+      tummy_time_min: [16, 17, 18, 19, 20, 21, 22],
+      supported_sitting_sec: [102, 108, 113, 118, 123, 127, 130],
+    },
+  },
+  baby_emma: {
+    name: 'Emma (8 months)',
+    time_to_reach_toy_s: 4.6,
+    rolling_success_pct: 58,
+    tummy_time_min: 14,
+    supported_sitting_sec: 70,
+    weekly_sessions: 4,
+    trend: 'Tummy time and supported sitting are trending upward; continue daily practice.',
+    updated_at: 'Updated: 2026-04-16',
+    series: {
+      time_to_reach_toy_s: [6.1, 5.9, 5.5, 5.2, 4.9, 4.8, 4.6],
+      rolling_success_pct: [41, 44, 47, 51, 54, 56, 58],
+      tummy_time_min: [9, 10, 11, 12, 13, 13, 14],
+      supported_sitting_sec: [48, 51, 56, 60, 64, 67, 70],
+    },
+  },
+  baby_ethan_slow_reaction: {
+    name: 'Ethan (11 months) - Slower Reaction',
+    time_to_reach_toy_s: 6.8,
+    rolling_success_pct: 46,
+    tummy_time_min: 11,
+    supported_sitting_sec: 58,
+    weekly_sessions: 5,
+    trend: 'Reaction time to reach toy remains slower than age-group average; gradual improvement observed.',
+    updated_at: 'Updated: 2026-04-18',
+    series: {
+      time_to_reach_toy_s: [7.4, 7.3, 7.2, 7.0, 6.9, 6.9, 6.8],
+      rolling_success_pct: [37, 38, 40, 42, 44, 45, 46],
+      tummy_time_min: [8, 8, 9, 9, 10, 10, 11],
+      supported_sitting_sec: [42, 45, 48, 51, 54, 56, 58],
+    },
+  },
+};
+
+function getCurrentAssessmentName() {
+  const active = document.querySelector('.task-btn.active');
+  if (!active) return 'Assessment';
+  return active.textContent.trim().replace(/\s+/g, ' ');
+}
+
+function loadAssessmentHistory() {
+  try {
+    return JSON.parse(localStorage.getItem(HISTORY_KEY) || '[]');
+  } catch (_) {
+    return [];
+  }
+}
+
+function updateUploadControlsForTask() {
+  const focusRow = document.querySelector('.focus-select-row');
+  if (focusRow) {
+    focusRow.style.display = currentTask === 'motion_monitor' ? 'block' : 'none';
+  }
+}
+
+function saveAssessmentHistoryEntry(entry) {
+  const list = loadAssessmentHistory();
+  list.unshift(entry);
+  localStorage.setItem(HISTORY_KEY, JSON.stringify(list.slice(0, 50)));
+}
+
+function renderHistoryDashboard() {
+  const list = loadAssessmentHistory();
+  const total = list.length;
+  const avg = total ? (list.reduce((a, b) => a + (Number(b.score) || 0), 0) / total).toFixed(1) : '0.0';
+  const last = total ? (list[0].classification || 'N/A') : 'N/A';
+  document.getElementById('currentAssessmentChip').textContent = getCurrentAssessmentName();
+  document.getElementById('dashboardSummary').innerHTML = `
+    <div class="dash-card"><div class="dash-value">${total}</div><div class="dash-label">Sessions</div></div>
+    <div class="dash-card"><div class="dash-value">${avg}</div><div class="dash-label">Avg Score</div></div>
+    <div class="dash-card"><div class="dash-value" style="font-size:13px">${last}</div><div class="dash-label">Latest Class</div></div>`;
+
+  const rows = list.slice(0, 8).map(item => {
+    const date = new Date(item.ts).toLocaleString();
+    return `<div class="history-row">
+      <div>
+        <div class="history-main">${item.assessment}</div>
+        <div class="history-sub">${date}</div>
+      </div>
+      <div style="text-align:right">
+        <div class="history-score">${item.score}</div>
+        <div class="history-sub">${item.classification}</div>
+      </div>
+    </div>`;
+  }).join('');
+
+  document.getElementById('historyList').innerHTML = rows || '<div class="history-sub">No assessment history yet.</div>';
+}
+
+function switchPage(page) {
+  const showAssessment = page === 'assessment';
+  document.getElementById('assessmentPage').style.display = showAssessment ? 'grid' : 'none';
+  document.getElementById('historyPage').classList.toggle('visible', !showAssessment);
+  document.getElementById('pageBtnAssessment').classList.toggle('active', showAssessment);
+  document.getElementById('pageBtnHistory').classList.toggle('active', !showAssessment);
+  if (!showAssessment && streaming) {
+    stopStream();
+  }
+}
+
+function initHistoricalDataTab() {
+  const select = document.getElementById('babyProfileSelect');
+  const options = Object.entries(BABY_PROFILES).map(([id, p]) =>
+    `<option value="${id}">${p.name}</option>`
+  ).join('');
+  select.innerHTML = options;
+  if (select.value) {
+    renderHistoricalData(select.value);
+  }
+}
+
+function renderTrendChart(series, metricLabel) {
+  const host = document.getElementById('trendChartArea');
+  if (!host || !series || !series.length) return;
+
+  const width = 760;
+  const height = 220;
+  const padL = 40;
+  const padR = 12;
+  const padT = 16;
+  const padB = 28;
+  const plotW = width - padL - padR;
+  const plotH = height - padT - padB;
+  const minVal = Math.min(...series);
+  const maxVal = Math.max(...series);
+  const span = Math.max(maxVal - minVal, 1e-6);
+  const movingAvg = series.map((_, i) => {
+    const start = Math.max(0, i - 2);
+    const window = series.slice(start, i + 1);
+    return window.reduce((a, b) => a + b, 0) / window.length;
+  });
+
+  const xAt = i => padL + (i * (plotW / Math.max(series.length - 1, 1)));
+  const yAt = v => padT + ((maxVal - v) / span) * plotH;
+  const points = series.map((v, i) => `${xAt(i).toFixed(1)},${yAt(v).toFixed(1)}`).join(' ');
+  const avgCurvePoints = movingAvg.map((v, i) => `${xAt(i).toFixed(1)},${yAt(v).toFixed(1)}`).join(' ');
+
+  const monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+  const now = new Date();
+  const monthLabels = Array.from({ length: series.length }, (_, i) => {
+    const d = new Date(now.getFullYear(), now.getMonth() - (series.length - 1 - i), 1);
+    return monthNames[d.getMonth()];
+  });
+
+  const grid = [0, 0.25, 0.5, 0.75, 1].map(r => {
+    const y = (padT + r * plotH).toFixed(1);
+    const val = (maxVal - r * span).toFixed(1);
+    return `
+      <line x1="${padL}" y1="${y}" x2="${padL + plotW}" y2="${y}" stroke="rgba(148,163,184,0.2)" stroke-width="1" />
+      <text x="6" y="${(parseFloat(y) + 4).toFixed(1)}" fill="#94a3b8" font-size="10">${val}</text>
+    `;
+  }).join('');
+
+  const dots = series.map((v, i) => `
+    <circle cx="${xAt(i).toFixed(1)}" cy="${yAt(v).toFixed(1)}" r="3.5" fill="#60a5fa" />
+  `).join('');
+
+  const xLabels = monthLabels.map((label, i) => `
+    <text x="${xAt(i).toFixed(1)}" y="${height - 8}" text-anchor="middle" fill="#94a3b8" font-size="10">${label}</text>
+  `).join('');
+
+  host.innerHTML = `
+    <div class="chart-legend">
+      <span class="legend-chip"><span class="legend-line" style="background:#60a5fa"></span> Trend</span>
+      <span class="legend-chip"><span class="legend-line" style="background:#f59e0b"></span> Avg Curve</span>
+      <span class="legend-chip"><span class="legend-dot" style="background:#60a5fa"></span> Data point</span>
+    </div>
+    <div class="chart-wrap">
+      <svg class="trend-svg" viewBox="0 0 ${width} ${height}" preserveAspectRatio="none" aria-label="${metricLabel} trend chart">
+        ${grid}
+        <polyline points="${avgCurvePoints}" fill="none" stroke="#f59e0b" stroke-width="2" stroke-dasharray="5 4" stroke-linecap="round" stroke-linejoin="round" />
+        <polyline points="${points}" fill="none" stroke="#60a5fa" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" />
+        ${dots}
+        ${xLabels}
+      </svg>
+    </div>
+    <div class="history-note">${metricLabel} monthly trend with a smoothed average curve.</div>
+  `;
+}
+
+function renderHistoricalData(profileId) {
+  const p = BABY_PROFILES[profileId] || BABY_PROFILES[Object.keys(BABY_PROFILES)[0]];
+  if (!p) return;
+  const metricSelect = document.getElementById('historyMetricSelect');
+  const selectedMetric = metricSelect?.value || 'time_to_reach_toy_s';
+  const metricNames = {
+    time_to_reach_toy_s: 'Time to Reach Toy (s)',
+    rolling_success_pct: 'Rolling Success (%)',
+    tummy_time_min: 'Tummy Time / Day (min)',
+    supported_sitting_sec: 'Supported Sitting (s)',
+  };
+  document.getElementById('profileMetricGrid').innerHTML = `
+    <div class="metric-card"><div class="metric-name">Time to Reach Toy</div><div class="metric-value">${p.time_to_reach_toy_s}s</div></div>
+    <div class="metric-card"><div class="metric-name">Rolling Success</div><div class="metric-value">${p.rolling_success_pct}%</div></div>
+    <div class="metric-card"><div class="metric-name">Tummy Time / Day</div><div class="metric-value">${p.tummy_time_min} min</div></div>
+    <div class="metric-card"><div class="metric-name">Supported Sitting</div><div class="metric-value">${p.supported_sitting_sec}s</div></div>
+    <div class="metric-card" style="grid-column:1 / span 2"><div class="metric-name">Sessions This Week</div><div class="metric-value">${p.weekly_sessions}</div></div>
+  `;
+  document.getElementById('profileTrendText').textContent = p.trend;
+  document.getElementById('profileUpdatedAt').textContent = p.updated_at;
+  renderTrendChart(p.series?.[selectedMetric] || [], metricNames[selectedMetric] || selectedMetric);
+}
 
 // ── Camera enumeration ──
 async function loadCameras() {
@@ -438,6 +944,9 @@ async function loadCameras() {
   }
 }
 loadCameras();
+renderHistoryDashboard();
+updateUploadControlsForTask();
+initHistoricalDataTab();
 
 // ── Task selection ──
 document.querySelectorAll('.task-btn').forEach(btn => {
@@ -446,46 +955,11 @@ document.querySelectorAll('.task-btn').forEach(btn => {
     document.querySelectorAll('.task-btn').forEach(b => b.classList.remove('active'));
     btn.classList.add('active');
     currentTask = btn.dataset.task;
-    updateLegend();
     resetFeaturePanel();
-    // Show mode tabs only for motion_monitor
-    const tabs = document.getElementById('modeTabs');
-    if (currentTask === 'motion_monitor') {
-      tabs.style.display = 'flex';
-    } else {
-      tabs.style.display = 'none';
-      switchMode('live');
-    }
+    renderHistoryDashboard();
+    updateUploadControlsForTask();
   });
 });
-
-function updateLegend() {
-  const legends = {
-    motion_monitor: `
-      <div class="legend-item"><span class="legend-dot" style="background:#00ff00"></span> Body Skeleton</div>
-      <div class="legend-item"><span class="legend-dot" style="background:#ffff00"></span> Head / Face Joints</div>
-      <div class="legend-item"><span class="legend-dot" style="background:#ff6b35"></span> Hand Landmarks</div>`,
-    gross_motor: `
-      <div class="legend-item"><span class="legend-dot" style="background:#00ff00"></span> Skeletal Landmarks</div>
-      <div class="legend-item"><span class="legend-dot" style="background:#ff0"></span> Joint Angles</div>
-      <div class="legend-item"><span class="legend-dot" style="background:#0ff"></span> Center-of-Mass Path</div>`,
-    fine_motor: `
-      <div class="legend-item"><span class="legend-dot" style="background:#00ff00"></span> Hand Landmarks</div>
-      <div class="legend-item"><span class="legend-dot" style="background:#ff00ff"></span> Thumb-Index Line</div>
-      <div class="legend-item"><span class="legend-dot" style="background:#ff0"></span> Pinch Detection</div>`,
-    joint_attention: `
-      <div class="legend-item"><span class="legend-dot" style="background:#00ff00"></span> Face Mesh</div>
-      <div class="legend-item"><span class="legend-dot" style="background:#ff0"></span> Gaze Direction</div>
-      <div class="legend-item"><span class="legend-dot" style="background:#ff00ff"></span> Pointing Gesture</div>`,
-    pain_monitor: `
-      <div class="legend-item"><span class="legend-dot" style="background:#00ff00"></span> Facial Landmarks</div>
-      <div class="legend-item"><span class="legend-dot" style="background:#ff0000"></span> AU Activation Zones</div>`,
-  };
-  document.getElementById('legendContent').innerHTML = (legends[currentTask] || '') +
-    `<div class="legend-item"><span class="legend-dot" style="background:#10b981"></span> Normal</div>
-     <div class="legend-item"><span class="legend-dot" style="background:#f59e0b"></span> Borderline</div>
-     <div class="legend-item"><span class="legend-dot" style="background:#ef4444"></span> Attention Needed</div>`;
-}
 
 // ── Toggle stream ──
 async function toggleStream() {
@@ -1206,8 +1680,6 @@ function gazeLabel(dir) {
   return map[dir] || dir;
 }
 
-updateLegend();
-
 // ═══════════════════════════════════════════════════
 // Upload Video Mode
 // ═══════════════════════════════════════════════════
@@ -1218,6 +1690,10 @@ let playbackInterval = null;
 let playbackIdx = 0;
 let isPlaying = false;
 let uploadedVideoEl = null;   // <video> element for uploaded file preview
+let uploadSessionId = null;
+let isDraggingSlider = false;
+let resumePlaybackAfterSeek = false;
+let isExportingVideo = false;
 
 // mode-tabs visibility is managed in the task-btn click handler above
 
@@ -1233,9 +1709,29 @@ function switchMode(mode) {
     document.getElementById('placeholder').style.display = '';
     document.getElementById('webcam').style.display = 'none';
     document.getElementById('playbackControls').style.display = 'none';
+    document.getElementById('saveProcessedBtn').disabled = true;
     resetFeaturePanel();
   }
 }
+
+async function cleanupUploadSession(useBeacon = false) {
+  if (!uploadSessionId) return;
+  const sid = uploadSessionId;
+  uploadSessionId = null;
+  try {
+    if (useBeacon && navigator.sendBeacon) {
+      navigator.sendBeacon(`/api/v1/motion/session/${sid}/close`, new Blob([''], {type: 'text/plain'}));
+      return;
+    }
+    await fetch(`/api/v1/motion/session/${sid}/close`, { method: 'POST', keepalive: true });
+  } catch (_) {
+    // best-effort cleanup only
+  }
+}
+
+window.addEventListener('beforeunload', () => {
+  cleanupUploadSession(true);
+});
 
 // Drag-and-drop
 const dropArea = document.getElementById('dropArea');
@@ -1257,6 +1753,7 @@ function applyFile(f) {
     `🎬 <strong>${f.name}</strong><br><span style="font-size:11px">${(f.size/1024/1024).toFixed(1)} MB</span>`;
   document.getElementById('uploadRunBtn').disabled = false;
   document.getElementById('uploadRunBtn')._file = f;
+  document.getElementById('saveProcessedBtn').disabled = true;
 }
 
 async function runUploadTracking() {
@@ -1265,6 +1762,7 @@ async function runUploadTracking() {
   if (!f) return;
 
   const focus = document.getElementById('focusSelect').value;
+  const age = parseInt(document.getElementById('ageInput').value, 10) || 24;
 
   // Show progress
   const prog = document.getElementById('uploadProgress');
@@ -1277,11 +1775,16 @@ async function runUploadTracking() {
 
   const form = new FormData();
   form.append('file', f);
-  form.append('focus', focus);
+  form.append('task', currentTask);
+  form.append('age_months', String(age));
+  if (currentTask === 'motion_monitor') {
+    form.append('focus', focus);
+  }
 
   try {
+    await cleanupUploadSession();
     fill.style.width = '30%';
-    const resp = await fetch('/api/v1/motion/upload', { method: 'POST', body: form });
+    const resp = await fetch('/api/v1/motion/analyze', { method: 'POST', body: form });
     fill.style.width = '80%';
     status.textContent = 'Processing landmarks…';
 
@@ -1292,11 +1795,13 @@ async function runUploadTracking() {
 
     const data = await resp.json();
     fill.style.width = '100%';
-    status.textContent = `Done — ${data.processed_frames} frames analysed`;
+    status.textContent = `Done — ${data.processed_frames} frames analysed (${currentTask})`;
 
     uploadFrames = data.frames;
     uploadVideoMeta = data;
-    startUploadPlayback(f, data);
+    uploadSessionId = data.session_id || null;
+    startUploadPlayback(data);
+    document.getElementById('saveProcessedBtn').disabled = !uploadFrames.length;
 
   } catch (e) {
     status.textContent = '❌ ' + e.message;
@@ -1305,90 +1810,309 @@ async function runUploadTracking() {
   }
 }
 
-function startUploadPlayback(file, meta) {
+function frameIndexForTime(seconds) {
+  if (!uploadFrames.length) return 0;
+  let lo = 0;
+  let hi = uploadFrames.length - 1;
+  while (lo < hi) {
+    const mid = Math.ceil((lo + hi) / 2);
+    if (uploadFrames[mid].timestamp <= seconds) lo = mid;
+    else hi = mid - 1;
+  }
+  return lo;
+}
+
+function renderUploadFrameByIndex(idx, focus) {
+  if (!uploadFrames[idx]) return;
+  playbackIdx = idx;
+  const packet = uploadFrames[idx];
+  const fd = packet.result || packet;
+  const timeEl = document.getElementById('playbackTime');
+  const vidEl = uploadedVideoEl || document.getElementById('webcam');
+  const fallbackTs = packet.timestamp ?? 0;
+  const currentTime = Number.isFinite(vidEl?.currentTime) ? vidEl.currentTime : fallbackTs;
+  const dur = Number.isFinite(vidEl?.duration) ? vidEl.duration : (uploadFrames[uploadFrames.length - 1]?.timestamp || 0);
+  timeEl.textContent = `${currentTime.toFixed(2)}s / ${dur.toFixed(2)}s`;
+  handleResult(fd);
+}
+
+function startUploadPlayback(meta) {
   stopPlayback();
 
   // Show the uploaded video in the video element
   const vidEl = document.getElementById('webcam');
+  uploadedVideoEl = vidEl;
   vidEl.srcObject = null;
-  vidEl.src = URL.createObjectURL(file);
+  if (!meta.video_url) {
+    document.getElementById('uploadStatus').textContent = '❌ Missing temporary video URL from server';
+    return;
+  }
+  vidEl.src = `${meta.video_url}?v=${Date.now()}`;
   vidEl.loop = false;
   vidEl.muted = true;
   vidEl.style.display = 'block';
   document.getElementById('placeholder').style.display = 'none';
 
-  vidEl.addEventListener('loadedmetadata', () => { resizeOverlay(); }, { once: true });
+  const slider = document.getElementById('playbackSlider');
+  const playBtn = document.getElementById('playPauseBtn');
+  document.getElementById('saveProcessedBtn').disabled = !uploadFrames.length;
+
+  slider.onmousedown = () => {
+    isDraggingSlider = true;
+    resumePlaybackAfterSeek = !vidEl.paused;
+    if (resumePlaybackAfterSeek) {
+      vidEl.pause();
+      isPlaying = false;
+      playBtn.textContent = '▶';
+    }
+  };
+  slider.onmouseup = () => {
+    isDraggingSlider = false;
+    if (resumePlaybackAfterSeek) {
+      vidEl.play().catch(() => {});
+      isPlaying = true;
+      playBtn.textContent = '⏸';
+    }
+    resumePlaybackAfterSeek = false;
+  };
+  slider.ontouchstart = () => {
+    isDraggingSlider = true;
+    resumePlaybackAfterSeek = !vidEl.paused;
+    if (resumePlaybackAfterSeek) {
+      vidEl.pause();
+      isPlaying = false;
+      playBtn.textContent = '▶';
+    }
+  };
+  slider.ontouchend = () => {
+    isDraggingSlider = false;
+    if (resumePlaybackAfterSeek) {
+      vidEl.play().catch(() => {});
+      isPlaying = true;
+      playBtn.textContent = '⏸';
+    }
+    resumePlaybackAfterSeek = false;
+  };
+
+  vidEl.onloadedmetadata = () => {
+    resizeOverlay();
+    slider.min = '0';
+    slider.max = Number.isFinite(vidEl.duration) ? String(vidEl.duration) : '0';
+    slider.step = '0.01';
+    slider.value = 0;
+    renderUploadFrameByIndex(0, meta.focus);
+  };
+
+  vidEl.ontimeupdate = () => {
+    if (isDraggingSlider) return;
+    const idx = frameIndexForTime(vidEl.currentTime || 0);
+    slider.value = String(vidEl.currentTime || 0);
+    renderUploadFrameByIndex(idx, meta.focus);
+  };
+
+  vidEl.onseeked = () => {
+    const idx = frameIndexForTime(vidEl.currentTime || 0);
+    renderUploadFrameByIndex(idx, meta.focus);
+  };
+
+  vidEl.onended = () => {
+    isPlaying = false;
+    playBtn.textContent = '▶';
+  };
 
   const controls = document.getElementById('playbackControls');
-  const slider   = document.getElementById('playbackSlider');
-  const timeEl   = document.getElementById('playbackTime');
   controls.style.display = 'flex';
-  slider.max = uploadFrames.length - 1;
-  slider.value = 0;
   playbackIdx = 0;
   isPlaying = true;
-  document.getElementById('playPauseBtn').textContent = '⏸';
-
-  const intervalMs = (meta.sample_every / meta.video_fps) * 1000;
-
-  function renderFrame(idx) {
-    if (idx >= uploadFrames.length) {
-      stopPlayback();
-      document.getElementById('playPauseBtn').textContent = '▶';
-      return;
-    }
-    const fd = uploadFrames[idx];
-    slider.value = idx;
-    const dur = uploadFrames[uploadFrames.length - 1]?.timestamp || 0;
-    timeEl.textContent = `${fd.timestamp.toFixed(2)}s / ${dur.toFixed(2)}s`;
-
-    // Sync video element
-    vidEl.currentTime = fd.timestamp;
-
-    // Draw skeleton overlay
-    ctx.clearRect(0, 0, overlay.width, overlay.height);
-    drawUploadSkeleton(fd);
-
-    // Update feature panel
-    renderUploadFeaturePanel(fd, meta.focus);
-  }
-
-  renderFrame(0);
-
-  playbackInterval = setInterval(() => {
-    if (!isPlaying) return;
-    playbackIdx++;
-    if (playbackIdx >= uploadFrames.length) {
-      stopPlayback();
-      document.getElementById('playPauseBtn').textContent = '▶';
-      return;
-    }
-    renderFrame(playbackIdx);
-  }, intervalMs);
+  playBtn.textContent = '⏸';
+  vidEl.play().catch(() => {
+    isPlaying = false;
+    playBtn.textContent = '▶';
+  });
 }
 
 function togglePlayback() {
-  isPlaying = !isPlaying;
+  const vidEl = uploadedVideoEl || document.getElementById('webcam');
+  if (!vidEl || !vidEl.src) return;
+  if (vidEl.paused) {
+    vidEl.play();
+    isPlaying = true;
+  } else {
+    vidEl.pause();
+    isPlaying = false;
+  }
   document.getElementById('playPauseBtn').textContent = isPlaying ? '⏸' : '▶';
 }
 
 function seekPlayback(val) {
-  playbackIdx = parseInt(val);
-  if (uploadFrames[playbackIdx]) {
-    const fd = uploadFrames[playbackIdx];
-    const vidEl = document.getElementById('webcam');
-    vidEl.currentTime = fd.timestamp;
-    ctx.clearRect(0, 0, overlay.width, overlay.height);
-    drawUploadSkeleton(fd);
-    renderUploadFeaturePanel(fd, uploadVideoMeta?.focus || 'full_body');
-    const dur = uploadFrames[uploadFrames.length - 1]?.timestamp || 0;
-    document.getElementById('playbackTime').textContent = `${fd.timestamp.toFixed(2)}s / ${dur.toFixed(2)}s`;
-  }
+  const seekSeconds = parseFloat(val);
+  if (Number.isNaN(seekSeconds)) return;
+  const vidEl = uploadedVideoEl || document.getElementById('webcam');
+  if (!vidEl) return;
+  vidEl.currentTime = seekSeconds;
+  playbackIdx = frameIndexForTime(seekSeconds);
+  renderUploadFrameByIndex(playbackIdx, uploadVideoMeta?.focus || 'full_body');
 }
 
 function stopPlayback() {
   if (playbackInterval) { clearInterval(playbackInterval); playbackInterval = null; }
+  const vidEl = uploadedVideoEl || document.getElementById('webcam');
+  if (vidEl) {
+    try { vidEl.pause(); } catch (_) {}
+    vidEl.onloadedmetadata = null;
+    vidEl.ontimeupdate = null;
+    vidEl.onseeked = null;
+    vidEl.onended = null;
+  }
   isPlaying = false;
+  isDraggingSlider = false;
+  resumePlaybackAfterSeek = false;
+}
+
+async function saveProcessedVideo() {
+  if (isExportingVideo) return;
+  if (!uploadFrames.length || !uploadVideoMeta) {
+    alert('Please analyze a video first.');
+    return;
+  }
+
+  const vidEl = uploadedVideoEl || document.getElementById('webcam');
+  if (!vidEl || !vidEl.src) {
+    alert('No analyzed video available to export.');
+    return;
+  }
+  if (typeof MediaRecorder === 'undefined') {
+    alert('This browser does not support video export with MediaRecorder.');
+    return;
+  }
+
+  const status = document.getElementById('uploadStatus');
+  const saveBtn = document.getElementById('saveProcessedBtn');
+  const runBtn = document.getElementById('uploadRunBtn');
+  const playBtn = document.getElementById('playPauseBtn');
+
+  isExportingVideo = true;
+  saveBtn.disabled = true;
+  runBtn.disabled = true;
+  status.textContent = 'Rendering processed video…';
+  document.getElementById('uploadProgress').style.display = 'block';
+
+  const exportCanvas = document.createElement('canvas');
+  const width = vidEl.videoWidth || uploadVideoMeta.width || 640;
+  const height = vidEl.videoHeight || uploadVideoMeta.height || 480;
+  exportCanvas.width = width;
+  exportCanvas.height = height;
+  const ectx = exportCanvas.getContext('2d');
+
+  let mimeType = 'video/webm';
+  if (MediaRecorder.isTypeSupported('video/webm;codecs=vp9')) {
+    mimeType = 'video/webm;codecs=vp9';
+  } else if (MediaRecorder.isTypeSupported('video/webm;codecs=vp8')) {
+    mimeType = 'video/webm;codecs=vp8';
+  }
+
+  const stream = exportCanvas.captureStream(30);
+  const chunks = [];
+  const recorder = new MediaRecorder(stream, { mimeType });
+  recorder.ondataavailable = e => {
+    if (e.data && e.data.size > 0) chunks.push(e.data);
+  };
+
+  const renderComposite = () => {
+    ectx.clearRect(0, 0, width, height);
+    ectx.drawImage(vidEl, 0, 0, width, height);
+    ectx.drawImage(overlay, 0, 0, width, height);
+    if (!vidEl.paused && !vidEl.ended) {
+      requestAnimationFrame(renderComposite);
+    }
+  };
+
+  const done = new Promise((resolve, reject) => {
+    recorder.onstop = () => resolve();
+    recorder.onerror = () => reject(new Error('MediaRecorder export failed.'));
+  });
+
+  const prevTime = vidEl.currentTime || 0;
+  const wasPlaying = !vidEl.paused;
+  stopPlayback();
+  try {
+    vidEl.currentTime = 0;
+  } catch (_) {}
+
+  let forcedStopTimer = null;
+  let stopped = false;
+  const stopRecorder = () => {
+    if (stopped) return;
+    stopped = true;
+    if (recorder.state !== 'inactive') {
+      try { recorder.stop(); } catch (_) {}
+    }
+  };
+
+  vidEl.onended = () => {
+    stopRecorder();
+    isPlaying = false;
+    playBtn.textContent = '▶';
+  };
+
+  try {
+    recorder.start(250);
+
+    const playPromise = vidEl.play();
+    if (playPromise) {
+      await playPromise;
+    }
+    if (vidEl.paused) {
+      throw new Error('Video playback could not start for export.');
+    }
+
+    isPlaying = true;
+    playBtn.textContent = '⏸';
+    renderComposite();
+
+    const dur = Number.isFinite(vidEl.duration) ? vidEl.duration : (uploadFrames[uploadFrames.length - 1]?.timestamp || 0);
+    const timeoutMs = Math.max(4000, Math.ceil((dur + 1.5) * 1000));
+    forcedStopTimer = setTimeout(() => {
+      stopRecorder();
+    }, timeoutMs);
+
+    await done;
+
+    if (!chunks.length) {
+      throw new Error('No export data captured.');
+    }
+
+    const blob = new Blob(chunks, { type: mimeType });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    const stamp = new Date().toISOString().replace(/[:.]/g, '-');
+    a.href = url;
+    a.download = `processed-${currentTask}-${stamp}.webm`;
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    URL.revokeObjectURL(url);
+    status.textContent = 'Processed video saved.';
+  } catch (err) {
+    status.textContent = `❌ ${err?.message || 'Failed to export video.'}`;
+  } finally {
+    if (forcedStopTimer) clearTimeout(forcedStopTimer);
+    vidEl.onended = null;
+    try {
+      vidEl.currentTime = prevTime;
+    } catch (_) {}
+    if (wasPlaying) {
+      await vidEl.play().catch(() => {});
+      isPlaying = !vidEl.paused;
+      playBtn.textContent = isPlaying ? '⏸' : '▶';
+    } else {
+      isPlaying = false;
+      playBtn.textContent = '▶';
+    }
+    isExportingVideo = false;
+    saveBtn.disabled = !uploadFrames.length;
+    runBtn.disabled = false;
+  }
 }
 
 function drawUploadSkeleton(fd) {
@@ -1504,6 +2228,14 @@ function requestAssessment() {
 }
 
 function showAssessmentModal(data) {
+  saveAssessmentHistoryEntry({
+    ts: Date.now(),
+    assessment: getCurrentAssessmentName(),
+    score: data.overall_score ?? 0,
+    classification: data.overall_classification || 'N/A',
+  });
+  renderHistoryDashboard();
+
   const existing = document.querySelector('.modal-overlay');
   if (existing) existing.remove();
 

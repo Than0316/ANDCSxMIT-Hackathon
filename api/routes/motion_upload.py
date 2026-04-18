@@ -7,6 +7,7 @@ returns per-frame landmark data for frontend replay with skeleton overlay.
 from __future__ import annotations
 
 import shutil
+import time
 import uuid
 from pathlib import Path
 from typing import Literal
@@ -14,10 +15,13 @@ from typing import Literal
 import cv2
 import numpy as np
 from fastapi import APIRouter, File, Form, HTTPException, UploadFile
+from fastapi.responses import FileResponse
 from fastapi.responses import JSONResponse
 
 from config import MAX_VIDEO_SIZE_MB, SUPPORTED_VIDEO_FORMATS, UPLOAD_DIR
+from core.developmental_scorer import DevelopmentalScorer, assessment_to_dict
 from core.mediapipe_engine import HandDetector, PoseDetector
+from core.realtime_processor import RealtimeProcessor
 from utils.geometry import joint_angle, landmark_to_array, trunk_lean_angle
 
 router = APIRouter(prefix="/api/v1/motion", tags=["motion"])
@@ -50,6 +54,47 @@ FOCUS_CONNECTIONS: dict[str, list[tuple[int, int]]] = {
 
 SAMPLE_EVERY_N = 2   # process every 2nd frame to keep response size reasonable
 MAX_FRAMES    = 600  # cap at 600 processed frames (~20s at 30fps sampled every 2)
+SESSION_TTL_SECONDS = 60 * 60
+SESSION_VIDEO_DIR = UPLOAD_DIR / "sessions"
+SESSION_VIDEO_DIR.mkdir(parents=True, exist_ok=True)
+_SESSION_FILES: dict[str, dict[str, float | Path]] = {}
+UPLOAD_TASKS = {
+    "gross_motor",
+    "fine_motor",
+    "joint_attention",
+    "pain_monitor",
+    "motion_monitor",
+}
+
+
+def _cleanup_expired_sessions() -> None:
+    now = time.time()
+    expired = [
+        sid for sid, meta in _SESSION_FILES.items()
+        if now - float(meta["created_at"]) > SESSION_TTL_SECONDS
+    ]
+    for sid in expired:
+        entry = _SESSION_FILES.pop(sid, None)
+        if entry:
+            Path(entry["path"]).unlink(missing_ok=True)
+
+
+def _register_session_video(path: Path) -> str:
+    _cleanup_expired_sessions()
+    session_id = uuid.uuid4().hex
+    _SESSION_FILES[session_id] = {
+        "path": path,
+        "created_at": time.time(),
+    }
+    return session_id
+
+
+def _delete_session_video(session_id: str) -> bool:
+    entry = _SESSION_FILES.pop(session_id, None)
+    if not entry:
+        return False
+    Path(entry["path"]).unlink(missing_ok=True)
+    return True
 
 
 def _save_upload(file: UploadFile) -> Path:
@@ -57,7 +102,7 @@ def _save_upload(file: UploadFile) -> Path:
     if suffix not in SUPPORTED_VIDEO_FORMATS:
         raise HTTPException(400, f"Unsupported format: {suffix}")
     file_id = uuid.uuid4().hex
-    dest = UPLOAD_DIR / f"motion_{file_id}{suffix}"
+    dest = SESSION_VIDEO_DIR / f"motion_{file_id}{suffix}"
     with open(dest, "wb") as f:
         shutil.copyfileobj(file.file, f)
     size_mb = dest.stat().st_size / (1024 * 1024)
@@ -113,6 +158,7 @@ async def upload_motion_video(
         raise HTTPException(400, f"Invalid focus '{focus}'. Choose from: {list(FOCUS_LANDMARK_GROUPS)}")
 
     video_path = _save_upload(file)
+    session_id = _register_session_video(video_path)
 
     pose_det  = PoseDetector()  if focus != "hands" else None
     hand_det  = HandDetector()  if focus in ("hands", "full_body", "arms") else None
@@ -183,11 +229,14 @@ async def upload_motion_video(
         cap.release()
 
     finally:
-        if pose_det: pose_det.close()
-        if hand_det: hand_det.close()
-        video_path.unlink(missing_ok=True)
+        if pose_det:
+            pose_det.close()
+        if hand_det:
+            hand_det.close()
 
     return JSONResponse({
+        "session_id": session_id,
+        "video_url": f"/api/v1/motion/session/{session_id}/video",
         "video_fps":     fps,
         "sample_every":  SAMPLE_EVERY_N,
         "width":         width,
@@ -196,4 +245,111 @@ async def upload_motion_video(
         "processed_frames": len(frames_out),
         "focus":         focus,
         "frames":        frames_out,
+    })
+
+
+@router.get("/session/{session_id}/video")
+async def get_session_video(session_id: str):
+    _cleanup_expired_sessions()
+    entry = _SESSION_FILES.get(session_id)
+    if not entry:
+        raise HTTPException(404, "Session video not found or expired")
+    path = Path(entry["path"])
+    if not path.exists():
+        _SESSION_FILES.pop(session_id, None)
+        raise HTTPException(404, "Session video file missing")
+    return FileResponse(path)
+
+
+@router.post("/session/{session_id}/close")
+async def close_session_video(session_id: str):
+    deleted = _delete_session_video(session_id)
+    return JSONResponse({"ok": True, "deleted": deleted})
+
+
+@router.post("/analyze")
+async def upload_analyze_video(
+    file: UploadFile = File(...),
+    task: str = Form("gross_motor"),
+    age_months: int = Form(24),
+    focus: str = Form("full_body"),
+):
+    """
+    Upload a recorded video and analyze it for any assessment task.
+
+    - **file**: video file (mp4, avi, mov, mkv, webm)
+    - **task**: gross_motor | fine_motor | joint_attention | pain_monitor | motion_monitor
+    - **age_months**: child age used for scoring context
+    - **focus**: optional motion-monitor focus value, currently passthrough for UI compatibility
+    """
+    if task not in UPLOAD_TASKS:
+        raise HTTPException(400, f"Invalid task '{task}'. Choose from: {sorted(UPLOAD_TASKS)}")
+
+    video_path = _save_upload(file)
+    session_id = _register_session_video(video_path)
+    processor = RealtimeProcessor(task=task, age_months=age_months)
+    scorer = DevelopmentalScorer(child_age_months=age_months)
+
+    try:
+        cap = cv2.VideoCapture(str(video_path))
+        if not cap.isOpened():
+            raise HTTPException(422, "Could not open video file")
+
+        fps = cap.get(cv2.CAP_PROP_FPS) or 30.0
+        total_raw = int(cap.get(cv2.CAP_PROP_FRAME_COUNT))
+        width = int(cap.get(cv2.CAP_PROP_FRAME_WIDTH))
+        height = int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
+
+        frames_out: list[dict] = []
+        raw_idx = 0
+
+        while True:
+            ret, frame = cap.read()
+            if not ret:
+                break
+            raw_idx += 1
+
+            if raw_idx % SAMPLE_EVERY_N != 0:
+                continue
+            if len(frames_out) >= MAX_FRAMES:
+                break
+
+            result = processor.process_frame(frame)
+            features = result.get("features", {})
+            if task == "gross_motor":
+                scorer.update_from_gross_motor(features)
+            elif task == "fine_motor":
+                scorer.update_from_fine_motor(features)
+            elif task == "joint_attention":
+                scorer.update_from_attention(features)
+            elif task == "pain_monitor":
+                scorer.update_from_pain(result)
+            elif task == "motion_monitor":
+                scorer.update_from_gross_motor(features)
+
+            frames_out.append({
+                "frame_idx": raw_idx,
+                "timestamp": round(raw_idx / fps, 3),
+                "result": result,
+            })
+
+        cap.release()
+        assessment = scorer.compute_assessment()
+
+    finally:
+        processor.close()
+
+    return JSONResponse({
+        "session_id": session_id,
+        "video_url": f"/api/v1/motion/session/{session_id}/video",
+        "video_fps": fps,
+        "sample_every": SAMPLE_EVERY_N,
+        "width": width,
+        "height": height,
+        "total_raw_frames": total_raw,
+        "processed_frames": len(frames_out),
+        "task": task,
+        "focus": focus,
+        "frames": frames_out,
+        "assessment": assessment_to_dict(assessment),
     })
