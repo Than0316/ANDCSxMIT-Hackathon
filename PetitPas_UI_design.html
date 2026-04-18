@@ -1,0 +1,457 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PetitPas UI Mockup V7</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,500;0,600;1,400&family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <style>
+    body {
+      font-family: 'Outfit', sans-serif;
+      background-color: #FFF9F2; /* Brighter, warmer creamy background */
+      background-image: 
+        radial-gradient(circle at 10% 30%, rgba(255, 155, 113, 0.12) 0%, transparent 50%),
+        radial-gradient(circle at 85% 70%, rgba(251, 216, 127, 0.15) 0%, transparent 50%);
+    }
+    h1, h2, h3, .font-serif {
+      font-family: 'Lora', serif;
+    }
+    .mockup-shadow {
+      box-shadow: 0 35px 60px -15px rgba(255, 155, 113, 0.15), 0 0 0 10px #FFFFFF, 0 0 0 12px rgba(255, 155, 113, 0.05);
+    }
+    .soft-border {
+      border: 1px solid rgba(255, 230, 215, 0.6);
+    }
+    /* iOS Glassmorphism */
+    .ios-blur {
+      background: rgba(255, 255, 255, 0.85);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+    }
+    /* Achievement Badge Glow */
+    .badge-glow {
+      box-shadow: 0 0 20px rgba(255, 155, 113, 0.25);
+    }
+  </style>
+</head>
+<body class="min-h-screen flex flex-col items-center justify-center p-12 overflow-x-auto">
+
+  <!-- Header Text -->
+  <div class="text-center mb-16 relative z-20">
+    <h1 class="text-5xl font-serif font-bold text-[#4A423C] tracking-tight mb-4">PetitPas</h1>
+    <p class="text-[1.1rem] text-[#8C837C] font-medium max-w-3xl mx-auto leading-relaxed">
+      Turning everyday family memories into clinical-grade insights.<br/>
+      <span class="text-[#FF8A5B] font-semibold">A completely private, secure, and joyful development journal.</span>
+    </p>
+  </div>
+
+  <!-- Phones Container -->
+  <div class="flex flex-row items-start gap-14 relative z-10">
+    
+    <!-- ==============================================
+         SCREEN 1: DIARY (Blocks + Cherished Moments)
+         ============================================== -->
+    <div class="relative group">
+      <!-- Annotation -->
+      <div class="absolute -left-48 top-44 w-44 text-right">
+        <p class="text-xs font-bold text-[#4A423C] uppercase tracking-widest mb-1 font-serif">Motor Tracking</p>
+        <p class="text-[11px] font-medium text-[#8C837C] leading-tight">AI skeletal overlay detecting fine motor skills (Pincer Grasp) disguised as a cute video effect.</p>
+        <div class="absolute right-[-24px] top-2 w-5 h-[1.5px] bg-[#FF8A5B]"></div>
+      </div>
+
+      <div class="absolute -left-48 bottom-40 w-44 text-right">
+        <p class="text-xs font-bold text-[#4A423C] uppercase tracking-widest mb-1 font-serif">Private Highlights</p>
+        <p class="text-[11px] font-medium text-[#8C837C] leading-tight">No social pressure. Just a serene, private space for parents to favorite and curate core memories.</p>
+        <div class="absolute right-[-24px] top-2 w-5 h-[1.5px] bg-[#9BC19C]"></div>
+      </div>
+
+      <!-- Phone Shell -->
+      <div class="w-[340px] h-[720px] bg-[#FFFCF9] rounded-[3rem] mockup-shadow overflow-hidden flex flex-col relative text-[#4A423C]">
+        
+        <!-- Status Bar -->
+        <div class="h-12 w-full flex justify-between items-center px-7 pt-3 shrink-0 relative z-10">
+          <span class="text-[12px] font-medium">9:41</span>
+          <div class="flex space-x-1.5">
+            <div class="w-3 h-3 rounded-full bg-[#4A423C]"></div>
+            <div class="w-3 h-3 rounded-full bg-[#4A423C]"></div>
+          </div>
+        </div>
+
+        <!-- Header + Cartoon Avatar -->
+        <div class="px-6 pt-2 relative z-10 flex justify-between items-end">
+          <div>
+            <p class="text-[11px] font-bold text-[#B0A69D] uppercase tracking-widest mb-0.5">Leo's Journey</p>
+            <h2 class="text-2xl font-serif font-semibold tracking-tight">Daily Digest</h2>
+          </div>
+          <div class="relative pb-1">
+            <!-- DiceBear Cartoon Avatar -->
+            <img src="https://api.dicebear.com/7.x/micah/svg?seed=Julia&backgroundColor=FFE8E0" class="w-10 h-10 rounded-full border-2 border-white shadow-sm object-cover" alt="Mom Cartoon Avatar">
+          </div>
+        </div>
+
+        <!-- Hero Card (Blocks + AI Overlay) -->
+        <div class="px-5 mt-5 relative z-10">
+          <div class="relative w-full h-[240px] rounded-[1.5rem] overflow-hidden soft-border bg-white shadow-sm p-1.5">
+            <div class="relative w-full h-full rounded-[1.2rem] overflow-hidden bg-gray-100">
+              <!-- Block playing image -->
+              <img src="https://images.unsplash.com/photo-1596461404969-9ae70f2830c1?auto=format&fit=crop&q=80&w=800" class="w-full h-full object-cover object-center" alt="Toddler hands playing with blocks">
+              <div class="absolute inset-0 bg-gradient-to-t from-black/50 via-black/5 to-transparent"></div>
+
+              <!-- AI Skeleton Overlay (Fine Motor Focus on hands) -->
+              <div class="absolute inset-0">
+                <svg class="w-full h-full" viewBox="0 0 100 100" preserveAspectRatio="none">
+                  <!-- Hand/Fingers grabbing block (around x:45, y:65) -->
+                  <line x1="38" y1="75" x2="45" y2="65" stroke="#A3E635" stroke-width="1.2" stroke-dasharray="2,2" class="opacity-90"/>
+                  <line x1="45" y1="65" x2="55" y2="60" stroke="#A3E635" stroke-width="1.2" stroke-dasharray="2,2" class="opacity-90"/>
+                  
+                  <!-- Joints -->
+                  <circle cx="38" cy="75" r="2" fill="#4ADE80" opacity="0.9"/> <!-- Wrist -->
+                  <circle cx="45" cy="65" r="2" fill="#38BDF8" opacity="0.9"/> <!-- Palm -->
+                  
+                  <!-- Pincer points (Thumb and Index) -->
+                  <circle cx="55" cy="60" r="2.5" fill="#FDE047" class="animate-pulse"/> 
+                  <circle cx="52" cy="55" r="2.5" fill="#FDE047" class="animate-pulse"/>
+                  <circle cx="53.5" cy="57.5" r="4" fill="#FB923C" opacity="0.6" class="animate-ping"/>
+                </svg>
+              </div>
+
+              <!-- Top Left Tags -->
+              <div class="absolute top-3 left-3 flex flex-col gap-2">
+                <div class="bg-white/95 backdrop-blur-md px-2.5 py-1 rounded-full flex items-center shadow-sm w-max">
+                  <span class="text-[10px] font-bold text-[#FF8A5B] tracking-wide uppercase">New Moment ✨</span>
+                </div>
+                <div class="bg-black/30 backdrop-blur-sm px-2 py-0.5 rounded-full flex items-center w-max">
+                  <i data-lucide="scan" class="w-2.5 h-2.5 mr-1 text-[#A3E635]"></i>
+                  <span class="text-[8px] font-bold text-white uppercase tracking-wider">AI Active</span>
+                </div>
+              </div>
+
+              <div class="absolute bottom-3 left-3 right-3">
+                <span class="text-[9px] font-bold bg-[#849C73] text-white px-2 py-0.5 rounded uppercase tracking-wide shadow-sm">Fine Motor</span>
+                <h3 class="text-white font-serif font-medium text-[16px] leading-tight mt-1.5 drop-shadow-md">Building his first castle! 🧱</h3>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Cherished Moments (Personal Favorites) Section -->
+        <div class="px-5 mt-6 flex-1 relative z-10">
+          <div class="flex justify-between items-end mb-3 px-1">
+            <h3 class="text-[15px] font-semibold text-[#4A423C]">Cherished Moments</h3>
+            <span class="text-[10px] font-bold text-[#FF8A5B]">Favorites</span>
+          </div>
+          
+          <div class="flex gap-3 overflow-x-auto scrollbar-hide pb-4">
+            <!-- Moment Card 1 (Lifestyle - Morning Playtime) -->
+            <div class="w-[130px] bg-white p-1.5 rounded-2xl soft-border shadow-sm shrink-0">
+              <div class="w-full h-[95px] rounded-xl overflow-hidden mb-2 relative bg-gray-100">
+                <img src="https://images.unsplash.com/photo-1522771739844-6a9f6d5f14af?auto=format&fit=crop&q=80&w=400" class="w-full h-full object-cover">
+                <!-- Purely personal favorite badge -->
+                <div class="absolute bottom-1.5 right-1.5 bg-white/90 backdrop-blur rounded-full w-6 h-6 flex items-center justify-center shadow-sm border border-[#FFE8E0]">
+                  <i data-lucide="heart" class="w-3.5 h-3.5 text-[#FF8A5B] fill-[#FF8A5B]"></i>
+                </div>
+              </div>
+              <p class="text-[11px] font-medium text-[#4A423C] px-1 truncate">Morning playtime ☀️</p>
+            </div>
+
+            <!-- Moment Card 2 (Lifestyle - Tiny Toes) -->
+            <div class="w-[130px] bg-white p-1.5 rounded-2xl soft-border shadow-sm shrink-0">
+              <div class="w-full h-[95px] rounded-xl overflow-hidden mb-2 relative bg-gray-100">
+                <img src="https://images.unsplash.com/photo-1519689680058-324335c77eba?auto=format&fit=crop&q=80&w=400" class="w-full h-full object-cover">
+                <div class="absolute bottom-1.5 right-1.5 bg-white/90 backdrop-blur rounded-full w-6 h-6 flex items-center justify-center shadow-sm border border-[#FFE8E0]">
+                  <i data-lucide="heart" class="w-3.5 h-3.5 text-[#FF8A5B] fill-[#FF8A5B]"></i>
+                </div>
+              </div>
+              <p class="text-[11px] font-medium text-[#4A423C] px-1 truncate">Tiny toes 👣</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Bottom iOS Navbar -->
+        <div class="absolute bottom-0 w-full h-[85px] ios-blur border-t border-[#F5EBE6] flex justify-between items-start pt-3 px-10 z-30 pb-5">
+          <!-- Active Tab: Diary -->
+          <div class="flex flex-col items-center cursor-pointer">
+            <i data-lucide="book-heart" class="w-6 h-6 text-[#FF8A5B] fill-[#FFE8E0]"></i>
+            <span class="text-[10px] font-bold text-[#FF8A5B] mt-1 tracking-wide">Diary</span>
+          </div>
+          
+          <!-- Middle Floating Capture -->
+          <div class="relative group cursor-pointer -translate-y-5">
+            <div class="w-14 h-14 rounded-full bg-gradient-to-tr from-[#FF8A5B] to-[#FFAB85] text-white flex items-center justify-center shadow-[0_8px_20px_rgba(255,138,91,0.35)] border-[3px] border-[#FFFCF9] group-hover:scale-105 transition-transform">
+              <i data-lucide="plus" class="w-6 h-6"></i>
+            </div>
+          </div>
+          
+          <!-- Inactive Tab: Insights/Progress -->
+          <div class="flex flex-col items-center cursor-pointer">
+            <i data-lucide="sparkles" class="w-6 h-6 text-[#D4CFC9]"></i>
+            <span class="text-[10px] font-semibold text-[#D4CFC9] mt-1 tracking-wide">Progress</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ==============================================
+         SCREEN 2: CAPTURE (Ordered Modules & Privacy)
+         ============================================== -->
+    <div class="relative group mt-10">
+      <!-- Annotation -->
+      <div class="absolute -top-16 left-1/2 -translate-x-1/2 w-64 text-center">
+        <p class="text-xs font-bold text-[#4A423C] uppercase tracking-widest mb-1 font-serif">Multimodal Input</p>
+        <p class="text-[11px] font-medium text-[#8C837C] leading-tight">Modules organized by clinical relevance. Audio focuses strictly on Cry Analysis, avoiding unnecessary voice recording.</p>
+        <div class="absolute bottom-[-18px] left-1/2 w-[1px] h-5 bg-[#FF8A5B]"></div>
+      </div>
+
+      <!-- Phone Shell -->
+      <div class="w-[340px] h-[720px] bg-[#FEFBF6] rounded-[3rem] mockup-shadow overflow-hidden flex flex-col relative text-[#4A423C]">
+        
+        <!-- Status Bar -->
+        <div class="h-12 w-full flex justify-between items-center px-7 pt-3 shrink-0">
+          <span class="text-[12px] font-medium">9:41</span>
+          <div class="flex space-x-1.5">
+            <div class="w-3 h-3 rounded-full bg-[#4A423C]"></div>
+            <div class="w-3 h-3 rounded-full bg-[#4A423C]"></div>
+          </div>
+        </div>
+
+        <div class="px-6 pt-2 pb-5 text-center">
+          <h2 class="text-[26px] font-serif font-bold text-[#4A423C] mb-1">Log a Moment</h2>
+          <p class="text-[13px] text-[#8C837C]">Select a modality to record</p>
+        </div>
+
+        <!-- Pill Modules List -->
+        <div class="flex-1 px-5 space-y-4 relative z-10">
+          
+          <!-- 1. Motion + Gestures -->
+          <div class="bg-white rounded-2xl p-3 shadow-sm soft-border flex items-center justify-between cursor-pointer hover:shadow-md transition-shadow">
+            <div class="flex items-center">
+              <div class="w-12 h-12 bg-[#F1F5EE] rounded-xl flex items-center justify-center text-[#849C73] mr-4">
+                <i data-lucide="hand" class="w-6 h-6"></i>
+              </div>
+              <div>
+                <span class="font-bold text-[15px] text-[#4A423C] block">Motion & Gestures</span>
+                <span class="text-[11px] text-[#A39B95] font-medium">Grasping, crawling, walking</span>
+              </div>
+            </div>
+            <i data-lucide="chevron-right" class="w-5 h-5 text-[#E5E0D8]"></i>
+          </div>
+
+          <!-- 2. Cry Detection -->
+          <div class="bg-white rounded-2xl p-3 shadow-sm soft-border flex items-center justify-between cursor-pointer hover:shadow-md transition-shadow">
+            <div class="flex items-center">
+              <div class="w-12 h-12 bg-[#FFF0EB] rounded-xl flex items-center justify-center text-[#FF8A5B] mr-4">
+                <i data-lucide="frown" class="w-6 h-6"></i>
+              </div>
+              <div>
+                <span class="font-bold text-[15px] text-[#4A423C] block">Cry Analysis</span>
+                <span class="text-[11px] text-[#A39B95] font-medium">Identify distress vs. hunger</span>
+              </div>
+            </div>
+            <i data-lucide="chevron-right" class="w-5 h-5 text-[#E5E0D8]"></i>
+          </div>
+
+          <!-- 3. Expression Recognition -->
+          <div class="bg-white rounded-2xl p-3 shadow-sm soft-border flex items-center justify-between cursor-pointer hover:shadow-md transition-shadow">
+            <div class="flex items-center">
+              <div class="w-12 h-12 bg-[#FFF8EB] rounded-xl flex items-center justify-center text-[#F5B841] mr-4">
+                <i data-lucide="smile" class="w-6 h-6"></i>
+              </div>
+              <div>
+                <span class="font-bold text-[15px] text-[#4A423C] block">Expressions</span>
+                <span class="text-[11px] text-[#A39B95] font-medium">Eye contact, social smiles</span>
+              </div>
+            </div>
+            <i data-lucide="chevron-right" class="w-5 h-5 text-[#E5E0D8]"></i>
+          </div>
+        </div>
+
+        <!-- Safe & Private Box -->
+        <div class="absolute bottom-[105px] left-5 right-5 bg-gradient-to-br from-[#FFFFFF] to-[#FDF9F3] rounded-[1.5rem] p-5 shadow-sm border border-[#EBE6E1] flex flex-col items-center text-center z-20">
+           <div class="w-10 h-10 rounded-full bg-[#F1F5EE] flex items-center justify-center mb-2">
+             <i data-lucide="shield-check" class="w-5 h-5 text-[#849C73]"></i>
+           </div>
+           <h4 class="font-serif font-semibold text-[15px] text-[#4A423C] mb-1">Safe & Private</h4>
+           <p class="text-[11px] text-[#8C837C] leading-snug px-2 font-medium">
+             Your videos are processed locally using edge AI. Raw footage never leaves this device, only secure clinical data points are saved.
+           </p>
+        </div>
+
+        <!-- Bottom iOS Navbar -->
+        <div class="absolute bottom-0 w-full h-[85px] ios-blur border-t border-[#F5EBE6] flex justify-between items-start pt-3 px-10 z-30 pb-5">
+          <!-- Inactive Tab -->
+          <div class="flex flex-col items-center cursor-pointer">
+            <i data-lucide="book-heart" class="w-6 h-6 text-[#D4CFC9]"></i>
+            <span class="text-[10px] font-semibold text-[#D4CFC9] mt-1 tracking-wide">Diary</span>
+          </div>
+          
+          <!-- Active Floating Capture -->
+          <div class="relative group cursor-pointer -translate-y-5">
+            <div class="w-14 h-14 rounded-full bg-gradient-to-tr from-[#9BC19C] to-[#B6D6B7] text-white flex items-center justify-center shadow-[0_8px_20px_rgba(155,193,156,0.4)] border-[3px] border-[#FEFBF6]">
+              <i data-lucide="camera" class="w-6 h-6"></i>
+            </div>
+          </div>
+          
+          <!-- Inactive Tab -->
+          <div class="flex flex-col items-center cursor-pointer">
+            <i data-lucide="sparkles" class="w-6 h-6 text-[#D4CFC9]"></i>
+            <span class="text-[10px] font-semibold text-[#D4CFC9] mt-1 tracking-wide">Progress</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ==============================================
+         SCREEN 3: PROGRESS / ACHIEVEMENTS & CURVE
+         ============================================== -->
+    <div class="relative group">
+      <!-- Annotation -->
+      <div class="absolute -right-48 top-40 w-44 text-left">
+        <p class="text-xs font-bold text-[#4A423C] uppercase tracking-widest mb-1 font-serif">Gamified Milestones</p>
+        <p class="text-[11px] font-medium text-[#8C837C] leading-tight">Denver II curves and ASQ-3 metrics converted into rewarding badges and warm visual charts.</p>
+        <div class="absolute left-[-24px] top-2 w-5 h-[1.5px] bg-[#F5B841]"></div>
+      </div>
+
+      <!-- Phone Shell -->
+      <div class="w-[340px] h-[720px] bg-[#FFFCF9] rounded-[3rem] mockup-shadow overflow-hidden flex flex-col relative text-[#4A423C]">
+        
+        <!-- Status Bar -->
+        <div class="h-12 w-full flex justify-between items-center px-7 pt-3 shrink-0 relative z-20">
+          <span class="text-[12px] font-medium text-[#4A423C]">9:41</span>
+          <div class="flex space-x-1.5">
+            <div class="w-3 h-3 rounded-full bg-[#4A423C]"></div>
+            <div class="w-3 h-3 rounded-full bg-[#4A423C]"></div>
+          </div>
+        </div>
+
+        <!-- Header -->
+        <div class="px-6 pt-2 pb-2 relative z-20">
+          <h2 class="text-[26px] font-serif font-bold text-[#4A423C]">Progress</h2>
+        </div>
+
+        <!-- Current Stage Hero Card -->
+        <div class="px-5 mt-1">
+          <div class="bg-gradient-to-br from-[#F5C77E] to-[#F1B350] rounded-[1.5rem] p-4 text-white shadow-[0_10px_20px_rgba(245,199,126,0.3)] relative overflow-hidden">
+            <div class="absolute -right-6 -top-6 w-24 h-24 bg-white/30 rounded-full blur-xl"></div>
+            
+            <p class="text-[10px] font-bold uppercase tracking-wider text-white/90 mb-1">Stage: 12-15 Months</p>
+            <h3 class="font-serif text-2xl font-semibold mb-2">The Explorer 🌟</h3>
+            
+            <!-- Progress Bar -->
+            <div class="w-full bg-white/30 rounded-full h-1.5 mb-1.5">
+              <div class="bg-white h-1.5 rounded-full" style="width: 75%"></div>
+            </div>
+            <p class="text-[9px] font-medium text-white/90">75% milestones unlocked</p>
+          </div>
+        </div>
+
+        <div class="flex-1 overflow-y-auto scrollbar-hide pb-24">
+          <!-- Growth Curve Section -->
+          <div class="px-5 mt-5">
+            <div class="flex justify-between items-end mb-2 px-1">
+              <h3 class="text-[14px] font-bold text-[#4A423C]">Growth Trajectory</h3>
+              <span class="text-[9px] font-medium text-[#AD9F95] bg-[#F5EBE6] px-2 py-0.5 rounded-sm">Denver II</span>
+            </div>
+            
+            <div class="bg-white rounded-[1.5rem] p-4 soft-border shadow-sm relative overflow-hidden">
+              <svg class="w-full h-[100px]" viewBox="0 0 100 60" preserveAspectRatio="none">
+                <!-- Grid lines -->
+                <line x1="0" y1="15" x2="100" y2="15" stroke="#F5EBE6" stroke-width="0.5" stroke-dasharray="1,1" />
+                <line x1="0" y1="30" x2="100" y2="30" stroke="#F5EBE6" stroke-width="0.5" stroke-dasharray="1,1" />
+                <line x1="0" y1="45" x2="100" y2="45" stroke="#F5EBE6" stroke-width="0.5" stroke-dasharray="1,1" />
+                
+                <!-- Percentile Curves -->
+                <path d="M0,50 Q40,35 100,5" fill="none" stroke="#EBE0D8" stroke-width="1.5" />
+                <path d="M0,55 Q40,45 100,20" fill="none" stroke="#EBE0D8" stroke-width="1.5" />
+                <path d="M0,58 Q40,52 100,35" fill="none" stroke="#EBE0D8" stroke-width="1.5" />
+                
+                <!-- Leo's Trajectory -->
+                <path d="M0,56 Q20,48 40,42 T75,18" fill="none" stroke="#FF8A5B" stroke-width="2.5" stroke-linecap="round" />
+                
+                <!-- Data Points -->
+                <circle cx="20" cy="46" r="1.5" fill="#FF8A5B" />
+                <circle cx="45" cy="38" r="1.5" fill="#FF8A5B" />
+                <circle cx="75" cy="18" r="2.5" fill="#FF8A5B" />
+                <circle cx="75" cy="18" r="6" fill="#FF8A5B" opacity="0.2" class="animate-ping" />
+              </svg>
+              
+              <!-- X-axis Labels -->
+              <div class="flex justify-between mt-2 px-1">
+                <span class="text-[8px] text-[#A39B95] font-medium">3m</span>
+                <span class="text-[8px] text-[#A39B95] font-medium">6m</span>
+                <span class="text-[8px] text-[#A39B95] font-medium">9m</span>
+                <span class="text-[8px] text-[#FF8A5B] font-bold">12m</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Badges Grid -->
+          <div class="px-5 pt-5">
+            <div class="flex justify-between items-end mb-3 px-1">
+              <h3 class="text-[14px] font-bold text-[#4A423C]">Recent Achievements</h3>
+            </div>
+
+            <div class="grid grid-cols-2 gap-3">
+              <!-- Unlocked Badge 1 -->
+              <div class="bg-white border border-[#FDECDA] rounded-2xl p-3 flex flex-col items-center text-center badge-glow relative overflow-hidden">
+                <div class="w-10 h-10 bg-gradient-to-b from-[#FFF5DC] to-[#FBE4A0] rounded-full flex items-center justify-center mb-2 shadow-inner border border-[#FBE395]">
+                  <i data-lucide="hand" class="w-5 h-5 text-[#D9A25B]"></i>
+                </div>
+                <h4 class="font-bold text-[12px] text-[#4A423C] leading-tight">Pincer Grasp</h4>
+                <p class="text-[8px] text-[#FF8A5B] font-bold uppercase mt-1">Unlocked</p>
+              </div>
+
+              <!-- Unlocked Badge 2 -->
+              <div class="bg-white border border-[#EBF2E7] rounded-2xl p-3 flex flex-col items-center text-center badge-glow relative overflow-hidden">
+                <div class="w-10 h-10 bg-gradient-to-b from-[#EBF2E7] to-[#D5E6CD] rounded-full flex items-center justify-center mb-2 shadow-inner border border-[#CADAC1]">
+                  <i data-lucide="smile" class="w-5 h-5 text-[#849C73]"></i>
+                </div>
+                <h4 class="font-bold text-[12px] text-[#4A423C] leading-tight">Joint Attention</h4>
+                <p class="text-[8px] text-[#FF8A5B] font-bold uppercase mt-1">Unlocked</p>
+              </div>
+
+              <!-- Locked Badge -->
+              <div class="bg-[#FAF9F7] border border-[#F0EBE1] rounded-2xl p-3 flex flex-col items-center text-center">
+                <div class="w-10 h-10 bg-[#F0EBE1] rounded-full flex items-center justify-center mb-2 opacity-50">
+                  <i data-lucide="lock" class="w-4 h-4 text-[#C2B7AE]"></i>
+                </div>
+                <h4 class="font-medium text-[12px] text-[#A39B95] leading-tight">Two-word Phrase</h4>
+                <p class="text-[8px] text-[#C2B7AE] font-semibold uppercase mt-1">In Progress</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Bottom iOS Navbar -->
+        <div class="absolute bottom-0 w-full h-[85px] ios-blur border-t border-[#F5EBE6] flex justify-between items-start pt-3 px-10 z-30 pb-5">
+          <!-- Inactive Tab -->
+          <div class="flex flex-col items-center cursor-pointer">
+            <i data-lucide="book-heart" class="w-6 h-6 text-[#D4CFC9]"></i>
+            <span class="text-[10px] font-semibold text-[#D4CFC9] mt-1 tracking-wide">Diary</span>
+          </div>
+          
+          <!-- Inactive Floating Capture -->
+          <div class="relative group cursor-pointer -translate-y-5">
+            <div class="w-14 h-14 rounded-full bg-[#F5F2EC] text-[#A39B95] flex items-center justify-center shadow-sm border border-[#E8E2D9]">
+              <i data-lucide="plus" class="w-6 h-6"></i>
+            </div>
+          </div>
+          
+          <!-- Active Tab: Progress -->
+          <div class="flex flex-col items-center cursor-pointer">
+            <i data-lucide="sparkles" class="w-6 h-6 text-[#F5B841] fill-[#FDEECA]"></i>
+            <span class="text-[10px] font-bold text-[#F5B841] mt-1 tracking-wide">Progress</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <script>
+    // Initialize Lucide Icons
+    lucide.createIcons();
+  </script>
+</body>
+</html>
