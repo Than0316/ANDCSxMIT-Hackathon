@@ -34,51 +34,51 @@ class Milestone:
 
 
 GROSS_MOTOR_MILESTONES = [
-    Milestone("head_control", "gross_motor", 4, "抬头稳定", "trunk_lean < 20 while prone"),
-    Milestone("sitting", "gross_motor", 6, "独坐", "stable com, no support"),
-    Milestone("crawling", "gross_motor", 9, "爬行", "alternating limb movement on floor"),
-    Milestone("pull_to_stand", "gross_motor", 10, "扶站", "standing with support"),
-    Milestone("walk_with_help", "gross_motor", 12, "扶走", "walking with support, step_count > 0"),
-    Milestone("walk_alone", "gross_motor", 15, "独走", "walking without support"),
-    Milestone("run", "gross_motor", 18, "跑步", "step_freq > 2.5 Hz"),
-    Milestone("kick_ball", "gross_motor", 24, "踢球", "leg swing motion"),
-    Milestone("jump_both_feet", "gross_motor", 24, "双脚跳", "both feet off ground"),
-    Milestone("climb_stairs", "gross_motor", 24, "上楼梯", "alternating stair pattern"),
-    Milestone("stand_one_leg_1s", "gross_motor", 30, "单脚站1秒", "single_leg_duration >= 1"),
-    Milestone("pedal_tricycle", "gross_motor", 36, "骑三轮车", "alternating leg motion"),
-    Milestone("hop_one_foot", "gross_motor", 48, "单脚跳", "single_leg + jump"),
-    Milestone("stand_one_leg_5s", "gross_motor", 60, "单脚站5秒", "single_leg_duration >= 5"),
+    Milestone("head_control", "gross_motor", 4, "Stable head control", "trunk_lean < 20 while prone"),
+    Milestone("sitting", "gross_motor", 6, "Sits independently", "stable com, no support"),
+    Milestone("crawling", "gross_motor", 9, "Crawling", "alternating limb movement on floor"),
+    Milestone("pull_to_stand", "gross_motor", 10, "Pulls to stand", "standing with support"),
+    Milestone("walk_with_help", "gross_motor", 12, "Walks with support", "walking with support, step_count > 0"),
+    Milestone("walk_alone", "gross_motor", 15, "Walks independently", "walking without support"),
+    Milestone("run", "gross_motor", 18, "Runs", "step_freq > 2.5 Hz"),
+    Milestone("kick_ball", "gross_motor", 24, "Kicks a ball", "leg swing motion"),
+    Milestone("jump_both_feet", "gross_motor", 24, "Jumps with both feet", "both feet off ground"),
+    Milestone("climb_stairs", "gross_motor", 24, "Climbs stairs", "alternating stair pattern"),
+    Milestone("stand_one_leg_1s", "gross_motor", 30, "Stands on one leg for 1 second", "single_leg_duration >= 1"),
+    Milestone("pedal_tricycle", "gross_motor", 36, "Pedals a tricycle", "alternating leg motion"),
+    Milestone("hop_one_foot", "gross_motor", 48, "Hops on one foot", "single_leg + jump"),
+    Milestone("stand_one_leg_5s", "gross_motor", 60, "Stands on one leg for 5 seconds", "single_leg_duration >= 5"),
 ]
 
 FINE_MOTOR_MILESTONES = [
-    Milestone("reach_grasp", "fine_motor", 5, "伸手抓物", "hand reaching motion"),
-    Milestone("transfer_objects", "fine_motor", 7, "双手传递", "object between hands"),
-    Milestone("pincer_grasp", "fine_motor", 10, "捏取小物", "thumb_index_distance < 0.15"),
-    Milestone("put_in_container", "fine_motor", 12, "放入容器", "release_count > 0"),
-    Milestone("stack_2_blocks", "fine_motor", 15, "叠2块积木", "placement_count >= 2"),
-    Milestone("scribble", "fine_motor", 18, "涂鸦", "wrist movement pattern"),
-    Milestone("stack_4_blocks", "fine_motor", 24, "叠4块积木", "placement_count >= 4"),
-    Milestone("turn_pages", "fine_motor", 24, "翻书页", "pincer + wrist rotation"),
-    Milestone("use_fork", "fine_motor", 30, "使用叉子", "controlled grasp + arm motion"),
-    Milestone("button_clothes", "fine_motor", 48, "扣纽扣", "fine pincer + coordination"),
-    Milestone("write_letters", "fine_motor", 60, "写字母", "controlled fine wrist motion"),
+    Milestone("reach_grasp", "fine_motor", 5, "Reaches and grasps objects", "hand reaching motion"),
+    Milestone("transfer_objects", "fine_motor", 7, "Transfers objects between hands", "object between hands"),
+    Milestone("pincer_grasp", "fine_motor", 10, "Pincer grasp", "thumb_index_distance < 0.15"),
+    Milestone("put_in_container", "fine_motor", 12, "Puts object in container", "release_count > 0"),
+    Milestone("stack_2_blocks", "fine_motor", 15, "Stacks 2 blocks", "placement_count >= 2"),
+    Milestone("scribble", "fine_motor", 18, "Scribbles", "wrist movement pattern"),
+    Milestone("stack_4_blocks", "fine_motor", 24, "Stacks 4 blocks", "placement_count >= 4"),
+    Milestone("turn_pages", "fine_motor", 24, "Turns book pages", "pincer + wrist rotation"),
+    Milestone("use_fork", "fine_motor", 30, "Uses a fork", "controlled grasp + arm motion"),
+    Milestone("button_clothes", "fine_motor", 48, "Buttons clothing", "fine pincer + coordination"),
+    Milestone("write_letters", "fine_motor", 60, "Writes letters", "controlled fine wrist motion"),
 ]
 
 # M-CHAT-R relevant items that can be assessed via video
 SOCIAL_ATTENTION_MILESTONES = [
-    Milestone("eye_contact", "social", 3, "目光接触", "gaze_direction == center, sustained"),
-    Milestone("social_smile", "social", 3, "社交微笑", "AU6 + AU12 activation"),
-    Milestone("follow_gaze", "social", 9, "追随视线", "gaze_shift after prompt"),
-    Milestone("respond_name", "social", 9, "听名回头", "head_yaw change on cue"),
-    Milestone("point_to_show", "social", 12, "指物分享", "pointing + gaze alternation"),
-    Milestone("point_to_request", "social", 12, "指物要求", "pointing toward object"),
-    Milestone("imitate_actions", "social", 12, "模仿动作", "dtw_similarity > 0.5"),
-    Milestone("wave_bye", "social", 12, "挥手再见", "hand wave pattern"),
-    Milestone("show_objects", "social", 15, "展示物品", "arm extension + gaze to adult"),
-    Milestone("nod_yes", "social", 18, "点头表示是", "nod_count > 0"),
-    Milestone("shake_no", "social", 18, "摇头表示否", "shake_count > 0"),
-    Milestone("pretend_play", "social", 24, "假装游戏", "symbolic object use"),
-    Milestone("joint_attention", "social", 12, "共同注意力", "gaze_shift_count >= 3"),
+    Milestone("eye_contact", "social", 3, "Eye contact", "gaze_direction == center, sustained"),
+    Milestone("social_smile", "social", 3, "Social smile", "AU6 + AU12 activation"),
+    Milestone("follow_gaze", "social", 9, "Follows gaze", "gaze_shift after prompt"),
+    Milestone("respond_name", "social", 9, "Responds to name", "head_yaw change on cue"),
+    Milestone("point_to_show", "social", 12, "Points to share", "pointing + gaze alternation"),
+    Milestone("point_to_request", "social", 12, "Points to request", "pointing toward object"),
+    Milestone("imitate_actions", "social", 12, "Imitates actions", "dtw_similarity > 0.5"),
+    Milestone("wave_bye", "social", 12, "Waves goodbye", "hand wave pattern"),
+    Milestone("show_objects", "social", 15, "Shows objects", "arm extension + gaze to adult"),
+    Milestone("nod_yes", "social", 18, "Nods yes", "nod_count > 0"),
+    Milestone("shake_no", "social", 18, "Shakes head no", "shake_count > 0"),
+    Milestone("pretend_play", "social", 24, "Pretend play", "symbolic object use"),
+    Milestone("joint_attention", "social", 12, "Joint attention", "gaze_shift_count >= 3"),
 ]
 
 
@@ -89,32 +89,32 @@ SOCIAL_ATTENTION_MILESTONES = [
 
 MCHAT_VIDEO_ITEMS = {
     "point_follow": {
-        "question": "当你指向房间另一边的东西时，孩子会看吗？",
+        "question": "When you point to something across the room, does the child look at it?",
         "detect_key": "gaze_shift_on_point",
         "critical": True,
     },
     "eye_contact": {
-        "question": "孩子会看你的眼睛吗？",
+        "question": "Does the child make eye contact with you?",
         "detect_key": "sustained_eye_contact",
         "critical": True,
     },
     "imitation": {
-        "question": "孩子会模仿你的动作吗？（如做鬼脸）",
+        "question": "Does the child imitate your actions (for example, making a face)?",
         "detect_key": "imitation_score",
         "critical": False,
     },
     "pointing": {
-        "question": "孩子会用食指指东西吗？",
+        "question": "Does the child point at objects with an index finger?",
         "detect_key": "pointing_detected",
         "critical": True,
     },
     "respond_name": {
-        "question": "叫孩子名字时会回头看你吗？",
+        "question": "Does the child turn and look when called by name?",
         "detect_key": "head_turn_on_name",
         "critical": True,
     },
     "show_interest": {
-        "question": "孩子会把东西拿给你看吗？",
+        "question": "Does the child bring objects to show you?",
         "detect_key": "show_behavior",
         "critical": False,
     },
@@ -291,9 +291,9 @@ class DevelopmentalScorer:
             age_equivalent_label=age_label,
             recommendations=recommendations,
             disclaimer=(
-                "本评估仅为 AI 辅助筛查工具，不构成临床诊断。"
-                "所有结果需经儿科医生或发育专科医生综合评估后确认。"
-                "分类决策权归临床医生所有。"
+                "This assessment is an AI-assisted screening tool and does not constitute a clinical diagnosis. "
+                "All results should be reviewed and confirmed by a pediatrician or developmental specialist. "
+                "Final classification decisions remain the responsibility of licensed clinicians."
             ),
         )
 
@@ -340,7 +340,7 @@ class DevelopmentalScorer:
 
         return DomainScore(
             domain="gross_motor",
-            domain_cn="粗大运动",
+            domain_cn="Gross Motor",
             achieved_count=achieved_count,
             expected_count=expected_count,
             score_pct=round(score_pct, 1),
@@ -381,7 +381,7 @@ class DevelopmentalScorer:
 
         return DomainScore(
             domain="fine_motor",
-            domain_cn="精细运动",
+            domain_cn="Fine Motor",
             achieved_count=achieved_count,
             expected_count=expected_count,
             score_pct=round(score_pct, 1),
@@ -431,7 +431,7 @@ class DevelopmentalScorer:
 
         return DomainScore(
             domain="social_attention",
-            domain_cn="社交/注意力",
+            domain_cn="Social / Attention",
             achieved_count=achieved_count,
             expected_count=expected_count,
             score_pct=round(score_pct, 1),
@@ -475,7 +475,7 @@ class DevelopmentalScorer:
 
         note = ""
         if "imitation" in failed:
-            note = "模仿项目需要双视频比较，当前无法通过单摄像头评估。"
+            note = "Imitation requires dual-video comparison and cannot be fully assessed with a single camera feed."
 
         return ASDScreening(
             items_assessed=assessed,
@@ -535,12 +535,12 @@ class DevelopmentalScorer:
 
     def _age_label(self, dev_age: int) -> str:
         if dev_age <= 0:
-            return "0-3个月水平"
+            return "0-3 month level"
         if dev_age == self.age:
-            return f"符合{self.age}个月龄水平"
+            return f"Age-appropriate at {self.age} months"
         if dev_age > self.age:
-            return f"达到{dev_age}个月水平 (超前{dev_age - self.age}个月)"
-        return f"约{dev_age}个月水平 (落后{self.age - dev_age}个月)"
+            return f"Approximately {dev_age}-month level ({dev_age - self.age} months ahead)"
+        return f"Approximately {dev_age}-month level ({self.age - dev_age} months behind)"
 
     def _generate_recommendations(
         self, classification: str, domains: list[DomainScore], asd: ASDScreening | None
@@ -548,46 +548,46 @@ class DevelopmentalScorer:
         recs = []
 
         if classification == "significant_delay":
-            recs.append("⚠️ 检测到显著发育落后，建议尽快预约儿童发育专科评估。")
+            recs.append("Significant developmental delay detected. Please arrange a specialist developmental evaluation as soon as possible.")
             for d in domains:
                 if d.age_difference_months <= -6 and d.missing_milestones:
-                    recs.append(f"  {d.domain_cn}领域缺失: {', '.join(d.missing_milestones[:3])}")
+                    recs.append(f"  Missing milestones in {d.domain_cn}: {', '.join(d.missing_milestones[:3])}")
 
         elif classification == "mild_delay":
-            recs.append("⚠️ 部分领域发育偏慢，建议在下次儿保时与医生讨论。")
+            recs.append("Some domains are progressing more slowly than expected. Discuss these findings with your pediatrician at the next follow-up.")
             for d in domains:
                 if d.age_difference_months <= -3 and d.missing_milestones:
-                    recs.append(f"  {d.domain_cn}: 关注 {', '.join(d.missing_milestones[:3])}")
+                    recs.append(f"  {d.domain_cn}: Monitor {', '.join(d.missing_milestones[:3])}")
 
         elif classification == "at_risk_asd":
-            recs.append("⚠️ 社交/注意力指标提示自闭症谱系障碍风险，建议进行专业 M-CHAT-R/F 完整筛查。")
+            recs.append("Social/attention indicators suggest possible ASD risk. A full professional M-CHAT-R/F screening is recommended.")
             if asd and asd.failed_items:
-                recs.append("  未通过的筛查项:")
+                recs.append("  Screening items not passed:")
                 for item in asd.failed_items[:4]:
                     recs.append(f"    • {item}")
-            recs.append("  建议: 尽早联系儿童精神科或发育行为儿科进行全面评估。")
+            recs.append("  Recommendation: Contact child psychiatry or developmental-behavioral pediatrics early for a comprehensive evaluation.")
 
         elif classification == "advanced":
-            recs.append("✅ 发育水平超前同龄，可适当提供更丰富的刺激和挑战。")
+            recs.append("Development appears advanced for age. Consider offering richer and age-appropriate learning challenges.")
             for d in domains:
                 if d.advanced_milestones:
-                    recs.append(f"  {d.domain_cn}: 已达到 {', '.join(d.advanced_milestones[:3])}")
+                    recs.append(f"  {d.domain_cn}: Already achieved {', '.join(d.advanced_milestones[:3])}")
 
         elif classification == "normal":
-            recs.append("✅ 各项发育指标在正常范围内，继续常规儿保随访。")
+            recs.append("Developmental indicators are within the expected range. Continue routine pediatric follow-up.")
 
         elif classification == "borderline":
-            recs.append("观察中: 部分指标处于临界范围，建议1-2个月后复测。")
+            recs.append("Borderline profile: some indicators are near threshold. Consider re-screening in 1-2 months.")
 
         # Domain-specific tips
         for d in domains:
             if d.score_pct < 50 and d.expected_count > 0:
                 if d.domain == "gross_motor":
-                    recs.append(f"💡 {d.domain_cn}建议: 增加户外运动时间，练习跑、跳、攀爬等大动作。")
+                    recs.append(f"Tip - {d.domain_cn}: Increase outdoor play and practice running, jumping, and climbing.")
                 elif d.domain == "fine_motor":
-                    recs.append(f"💡 {d.domain_cn}建议: 多玩积木、串珠、撕纸等精细操作游戏。")
+                    recs.append(f"Tip - {d.domain_cn}: Use fine-motor games such as blocks, bead threading, and paper tearing.")
                 elif d.domain == "social_attention":
-                    recs.append(f"💡 {d.domain_cn}建议: 增加面对面互动游戏，练习指物、模仿、轮流活动。")
+                    recs.append(f"Tip - {d.domain_cn}: Increase face-to-face interaction games and practice pointing, imitation, and turn-taking.")
 
         return recs
 

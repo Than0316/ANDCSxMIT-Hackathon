@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="zh-CN">
+<html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>CDC 儿童发育里程碑追踪器 — 实时检测</title>
+<title>CDC Child Development Milestone Tracker - Real-Time Assessment</title>
 <style>
 :root {
   --primary: #4f46e5; --primary-light: #818cf8;
@@ -215,12 +215,12 @@ canvas#overlay { position:absolute; top:0; left:0; width:100%; height:100%; poin
 
 <div class="header">
   <div>
-    <h1>CDC 儿童发育里程碑追踪器</h1>
-    <div class="header-sub">实时视频分析 — MediaPipe + 规则引擎</div>
+    <h1>CDC Child Development Milestone Tracker</h1>
+    <div class="header-sub">Real-time video analysis - MediaPipe + Rule Engine</div>
   </div>
   <div class="header-right">
     <span class="fps-counter" id="fpsCounter">-- FPS</span>
-    <span><span class="status-dot off" id="statusDot"></span> <span id="statusText" style="font-size:13px">未连接</span></span>
+    <span><span class="status-dot off" id="statusDot"></span> <span id="statusText" style="font-size:13px">Disconnected</span></span>
   </div>
 </div>
 
@@ -229,51 +229,51 @@ canvas#overlay { position:absolute; top:0; left:0; width:100%; height:100%; poin
   <!-- ─── Left Sidebar ─── -->
   <div class="sidebar">
     <div class="sidebar-group">
-      <h3>评估任务</h3>
+      <h3>Assessment Tasks</h3>
       <button class="task-btn active" data-task="gross_motor">
-        <span class="icon">🏃</span> 粗大运动
+        <span class="icon">🏃</span> Gross Motor
       </button>
       <button class="task-btn" data-task="fine_motor">
-        <span class="icon">🤏</span> 精细运动
+        <span class="icon">🤏</span> Fine Motor
       </button>
       <button class="task-btn" data-task="joint_attention">
-        <span class="icon">👀</span> 共同注意力
+        <span class="icon">👀</span> Joint Attention
       </button>
       <button class="task-btn" data-task="pain_monitor">
-        <span class="icon">😣</span> 疼痛监测
+        <span class="icon">😣</span> Pain Monitor
       </button>
     </div>
 
     <div class="config-section">
-      <h3>设置</h3>
+      <h3>Settings</h3>
       <div class="config-row">
-        <label>儿童月龄</label>
+        <label>Child Age (months)</label>
         <input type="number" id="ageInput" value="24" min="0" max="60">
       </div>
       <div class="config-row">
-        <label>摄像头</label>
-        <select id="cameraSelect"><option value="">加载中...</option></select>
+        <label>Camera</label>
+        <select id="cameraSelect"><option value="">Loading...</option></select>
       </div>
       <div class="config-row">
-        <label>发送帧率</label>
+        <label>Streaming FPS</label>
         <select id="fpsSelect">
-          <option value="5">5 FPS (省资源)</option>
-          <option value="8" selected>8 FPS (推荐)</option>
-          <option value="12">12 FPS (高精度)</option>
+          <option value="5">5 FPS (Low Resource)</option>
+          <option value="8" selected>8 FPS (Recommended)</option>
+          <option value="12">12 FPS (High Precision)</option>
         </select>
       </div>
-      <button class="start-btn go" id="startBtn" onclick="toggleStream()">开始检测</button>
+      <button class="start-btn go" id="startBtn" onclick="toggleStream()">Start Assessment</button>
       <button class="assess-btn" id="assessBtn" onclick="requestAssessment()" style="display:none">
-        📋 发育评估报告
+        📋 Development Assessment Report
       </button>
     </div>
 
     <div class="legend" id="legendSection">
-      <div class="legend-title">检测说明</div>
+      <div class="legend-title">Legend</div>
       <div id="legendContent">
-        <div class="legend-item"><span class="legend-dot" style="background:#10b981"></span> 正常范围</div>
-        <div class="legend-item"><span class="legend-dot" style="background:#f59e0b"></span> 临界值</div>
-        <div class="legend-item"><span class="legend-dot" style="background:#ef4444"></span> 需要关注</div>
+        <div class="legend-item"><span class="legend-dot" style="background:#10b981"></span> Normal Range</div>
+        <div class="legend-item"><span class="legend-dot" style="background:#f59e0b"></span> Borderline</div>
+        <div class="legend-item"><span class="legend-dot" style="background:#ef4444"></span> Needs Attention</div>
       </div>
     </div>
   </div>
@@ -284,21 +284,21 @@ canvas#overlay { position:absolute; top:0; left:0; width:100%; height:100%; poin
     <canvas id="overlay"></canvas>
     <div class="video-placeholder" id="placeholder">
       <div class="big">📷</div>
-      <div>选择任务并点击「开始检测」<br>启动摄像头实时分析</div>
+      <div>Select a task and click "Start Assessment"<br>to begin real-time camera analysis</div>
     </div>
     <div class="score-overlay" id="scoreOverlay"></div>
     <div class="calibration-bar" id="calibrationBar">
-      正在校准面部基线...<br>请保持自然表情
+      Calibrating facial baseline...<br>Please keep a natural expression
       <div class="bar"><div class="bar-fill" id="calBarFill" style="width:0%"></div></div>
     </div>
   </div>
 
   <!-- ─── Right Features Panel ─── -->
   <div class="features-panel">
-    <h3 id="featureTitle">实时特征</h3>
+    <h3 id="featureTitle">Real-Time Features</h3>
     <div id="featureContent">
       <div style="text-align:center;color:var(--text2);padding:40px 0;font-size:14px">
-        开始检测后显示实时数据
+        Real-time data will appear after starting assessment
       </div>
     </div>
   </div>
@@ -330,7 +330,7 @@ async function loadCameras() {
     cams.forEach((d, i) => {
       const opt = document.createElement('option');
       opt.value = d.deviceId;
-      opt.textContent = d.label || `摄像头 ${i+1}`;
+      opt.textContent = d.label || `Camera ${i+1}`;
       sel.appendChild(opt);
     });
   } catch(e) {
@@ -354,25 +354,25 @@ document.querySelectorAll('.task-btn').forEach(btn => {
 function updateLegend() {
   const legends = {
     gross_motor: `
-      <div class="legend-item"><span class="legend-dot" style="background:#00ff00"></span> 骨骼关键点</div>
-      <div class="legend-item"><span class="legend-dot" style="background:#ff0"></span> 关节角度</div>
-      <div class="legend-item"><span class="legend-dot" style="background:#0ff"></span> 重心轨迹</div>`,
+      <div class="legend-item"><span class="legend-dot" style="background:#00ff00"></span> Skeletal Landmarks</div>
+      <div class="legend-item"><span class="legend-dot" style="background:#ff0"></span> Joint Angles</div>
+      <div class="legend-item"><span class="legend-dot" style="background:#0ff"></span> Center-of-Mass Path</div>`,
     fine_motor: `
-      <div class="legend-item"><span class="legend-dot" style="background:#00ff00"></span> 手部关键点</div>
-      <div class="legend-item"><span class="legend-dot" style="background:#ff00ff"></span> 拇指-食指连线</div>
-      <div class="legend-item"><span class="legend-dot" style="background:#ff0"></span> 捏合检测</div>`,
+      <div class="legend-item"><span class="legend-dot" style="background:#00ff00"></span> Hand Landmarks</div>
+      <div class="legend-item"><span class="legend-dot" style="background:#ff00ff"></span> Thumb-Index Line</div>
+      <div class="legend-item"><span class="legend-dot" style="background:#ff0"></span> Pinch Detection</div>`,
     joint_attention: `
-      <div class="legend-item"><span class="legend-dot" style="background:#00ff00"></span> 面部网格</div>
-      <div class="legend-item"><span class="legend-dot" style="background:#ff0"></span> 视线方向</div>
-      <div class="legend-item"><span class="legend-dot" style="background:#ff00ff"></span> 手指指向</div>`,
+      <div class="legend-item"><span class="legend-dot" style="background:#00ff00"></span> Face Mesh</div>
+      <div class="legend-item"><span class="legend-dot" style="background:#ff0"></span> Gaze Direction</div>
+      <div class="legend-item"><span class="legend-dot" style="background:#ff00ff"></span> Pointing Gesture</div>`,
     pain_monitor: `
-      <div class="legend-item"><span class="legend-dot" style="background:#00ff00"></span> 面部关键点</div>
-      <div class="legend-item"><span class="legend-dot" style="background:#ff0000"></span> AU 激活区域</div>`,
+      <div class="legend-item"><span class="legend-dot" style="background:#00ff00"></span> Facial Landmarks</div>
+      <div class="legend-item"><span class="legend-dot" style="background:#ff0000"></span> AU Activation Zones</div>`,
   };
   document.getElementById('legendContent').innerHTML = (legends[currentTask] || '') +
-    `<div class="legend-item"><span class="legend-dot" style="background:#10b981"></span> 正常</div>
-     <div class="legend-item"><span class="legend-dot" style="background:#f59e0b"></span> 临界</div>
-     <div class="legend-item"><span class="legend-dot" style="background:#ef4444"></span> 需关注</div>`;
+    `<div class="legend-item"><span class="legend-dot" style="background:#10b981"></span> Normal</div>
+     <div class="legend-item"><span class="legend-dot" style="background:#f59e0b"></span> Borderline</div>
+     <div class="legend-item"><span class="legend-dot" style="background:#ef4444"></span> Attention Needed</div>`;
 }
 
 // ── Toggle stream ──
@@ -389,7 +389,7 @@ async function startStream() {
     video.srcObject = stream;
     await video.play();
   } catch(e) {
-    alert('无法访问摄像头: ' + e.message);
+    alert('Unable to access camera: ' + e.message);
     return;
   }
 
@@ -426,7 +426,7 @@ async function startStream() {
   ws.onerror = () => { setConnected(false); };
 
   const btn = document.getElementById('startBtn');
-  btn.textContent = '停止检测';
+  btn.textContent = 'Stop Assessment';
   btn.className = 'start-btn stop';
   document.getElementById('assessBtn').style.display = 'block';
   streaming = true;
@@ -442,7 +442,7 @@ function stopStream() {
   ctx.clearRect(0, 0, overlay.width, overlay.height);
 
   const btn = document.getElementById('startBtn');
-  btn.textContent = '开始检测';
+  btn.textContent = 'Start Assessment';
   btn.className = 'start-btn go';
   document.getElementById('assessBtn').style.display = 'none';
   setConnected(false);
@@ -487,7 +487,7 @@ function setConnected(on) {
   const dot = document.getElementById('statusDot');
   const txt = document.getElementById('statusText');
   dot.className = 'status-dot ' + (on ? 'on' : 'off');
-  txt.textContent = on ? '已连接' : '未连接';
+  txt.textContent = on ? 'Connected' : 'Disconnected';
 }
 
 // ── Handle results ──
@@ -513,7 +513,7 @@ function handleResult(data) {
   // Score overlay
   if (data.score && data.detected !== false) {
     const el = document.getElementById('scoreOverlay');
-    const labels = {normal:'正常', borderline:'临界', at_risk:'需关注'};
+    const labels = {normal:'Normal', borderline:'Borderline', at_risk:'At Risk'};
     el.textContent = labels[data.score] || data.score;
     el.className = 'score-overlay ' + data.score;
     el.style.display = 'block';
@@ -643,7 +643,7 @@ function drawFaceMeshOutline(lms) {
 // ── Feature panel renderers ──
 function resetFeaturePanel() {
   document.getElementById('featureContent').innerHTML =
-    '<div style="text-align:center;color:var(--text2);padding:40px 0;font-size:14px">开始检测后显示实时数据</div>';
+    '<div style="text-align:center;color:var(--text2);padding:40px 0;font-size:14px">Real-time data will appear after starting assessment</div>';
 }
 
 function fv(val, thresholds) {
@@ -656,12 +656,12 @@ function fv(val, thresholds) {
 
 function renderGrossMotorFeatures(d) {
   if (d.calibrating) {
-    document.getElementById('featureTitle').textContent = '粗大运动 — 校准中';
+    document.getElementById('featureTitle').textContent = 'Gross Motor - Calibrating';
     document.getElementById('featureContent').innerHTML = `
       <div style="text-align:center;padding:30px 0">
         <div style="font-size:32px;margin-bottom:12px">📐</div>
-        <div style="font-size:14px">地面校准中... ${Math.round((d.calibration_progress||0)*100)}%</div>
-        <div style="font-size:12px;color:var(--text2);margin-top:6px">请站在摄像头前保持不动</div>
+        <div style="font-size:14px">Floor calibration... ${Math.round((d.calibration_progress||0)*100)}%</div>
+        <div style="font-size:12px;color:var(--text2);margin-top:6px">Please stand still in front of the camera</div>
       </div>`;
     return;
   }
@@ -669,91 +669,91 @@ function renderGrossMotorFeatures(d) {
   const f = d.features;
 
   const movementLabels = {
-    standing:'站立', walking:'行走', squatting:'下蹲', jumping:'跳跃',
+    standing:'Standing', walking:'Walking', squatting:'Squatting', jumping:'Jumping',
   };
   let moveText = movementLabels[f.movement] || f.movement;
   if (f.movement && f.movement.includes('one_leg')) {
-    moveText = '单脚站立 (' + (f.support_side === 'left' ? '左脚支撑' : '右脚支撑') + ')';
+    moveText = 'One-leg stand (' + (f.support_side === 'left' ? 'left support' : 'right support') + ')';
   }
   const moveColor = f.movement === 'standing' ? '' : 'normal';
 
-  document.getElementById('featureTitle').textContent = '粗大运动 — 实时特征';
+  document.getElementById('featureTitle').textContent = 'Gross Motor - Real-Time Features';
   document.getElementById('featureContent').innerHTML = `
     <div class="feature-card" style="text-align:center;padding:16px;margin-bottom:10px">
-      <div class="feature-label">当前动作</div>
+      <div class="feature-label">Current Action</div>
       <div class="feature-value ${moveColor}" style="font-size:24px">${moveText}</div>
     </div>
 
     <div class="feature-row">
       <div class="feature-card">
-        <div class="feature-label">左脚离地</div>
-        <div class="feature-value ${f.left_foot_lift > 0.01 ? 'normal' : ''}">${f.left_foot_lift > 0.01 ? '↑ ' + (f.left_foot_lift * 100).toFixed(0) + '%' : '— 着地'}</div>
+        <div class="feature-label">Left Foot Lift</div>
+        <div class="feature-value ${f.left_foot_lift > 0.01 ? 'normal' : ''}">${f.left_foot_lift > 0.01 ? '↑ ' + (f.left_foot_lift * 100).toFixed(0) + '%' : '— Grounded'}</div>
       </div>
       <div class="feature-card">
-        <div class="feature-label">右脚离地</div>
-        <div class="feature-value ${f.right_foot_lift > 0.01 ? 'normal' : ''}">${f.right_foot_lift > 0.01 ? '↑ ' + (f.right_foot_lift * 100).toFixed(0) + '%' : '— 着地'}</div>
+        <div class="feature-label">Right Foot Lift</div>
+        <div class="feature-value ${f.right_foot_lift > 0.01 ? 'normal' : ''}">${f.right_foot_lift > 0.01 ? '↑ ' + (f.right_foot_lift * 100).toFixed(0) + '%' : '— Grounded'}</div>
       </div>
     </div>
 
     <div class="feature-row">
       <div class="feature-card">
-        <div class="feature-label">左膝角度</div>
+        <div class="feature-label">Left Knee Angle</div>
         <div class="feature-value">${f.left_knee_angle}°</div>
       </div>
       <div class="feature-card">
-        <div class="feature-label">右膝角度</div>
+        <div class="feature-label">Right Knee Angle</div>
         <div class="feature-value">${f.right_knee_angle}°</div>
       </div>
     </div>
     <div class="feature-row">
       <div class="feature-card">
-        <div class="feature-label">左肘角度</div>
+        <div class="feature-label">Left Elbow Angle</div>
         <div class="feature-value">${f.left_elbow_angle}°</div>
       </div>
       <div class="feature-card">
-        <div class="feature-label">右肘角度</div>
+        <div class="feature-label">Right Elbow Angle</div>
         <div class="feature-value">${f.right_elbow_angle}°</div>
       </div>
     </div>
 
     <div class="feature-row">
       <div class="feature-card">
-        <div class="feature-label">躯干前倾</div>
+        <div class="feature-label">Trunk Lean</div>
         <div class="feature-value ${f.trunk_lean > 25 ? 'warning' : ''}">${f.trunk_lean}°</div>
       </div>
       <div class="feature-card">
-        <div class="feature-label">重心稳定性</div>
+        <div class="feature-label">COM Stability</div>
         <div class="feature-value ${f.com_stability > 0.03 ? 'warning' : ''}">${f.com_stability}</div>
       </div>
     </div>
 
     <div class="feature-card">
-      <div class="feature-label">手臂状态</div>
-      <div class="feature-value">${{both_raised:'双手举起',left_raised:'左手举起',right_raised:'右手举起','':'自然下垂'}[f.arms_state] || '自然下垂'}</div>
+      <div class="feature-label">Arm State</div>
+      <div class="feature-value">${{both_raised:'Both Raised',left_raised:'Left Raised',right_raised:'Right Raised','':'Natural Down'}[f.arms_state] || 'Natural Down'}</div>
     </div>
 
     <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px;margin-top:8px">
       <div class="feature-card" style="text-align:center;padding:10px">
-        <div class="feature-label">单脚站</div>
+        <div class="feature-label">One-Leg Stand</div>
         <div class="feature-value" style="font-size:18px">${f.max_single_leg_duration}s</div>
       </div>
       <div class="feature-card" style="text-align:center;padding:10px">
-        <div class="feature-label">下蹲</div>
-        <div class="feature-value" style="font-size:18px">${f.squat_count}次</div>
+        <div class="feature-label">Squats</div>
+        <div class="feature-value" style="font-size:18px">${f.squat_count}</div>
       </div>
       <div class="feature-card" style="text-align:center;padding:10px">
-        <div class="feature-label">跳跃</div>
-        <div class="feature-value" style="font-size:18px">${f.jump_count}次</div>
+        <div class="feature-label">Jumps</div>
+        <div class="feature-value" style="font-size:18px">${f.jump_count}</div>
       </div>
     </div>
 
     <div class="feature-row" style="margin-top:8px">
       <div class="feature-card">
-        <div class="feature-label">步数</div>
+        <div class="feature-label">Step Count</div>
         <div class="feature-value">${f.step_count}</div>
       </div>
       <div class="feature-card">
-        <div class="feature-label">步频 (Hz)</div>
+        <div class="feature-label">Step Frequency (Hz)</div>
         <div class="feature-value">${f.step_frequency_hz}</div>
       </div>
     </div>`;
@@ -762,45 +762,45 @@ function renderGrossMotorFeatures(d) {
 function renderFineMotorFeatures(d) {
   if (!d.features) { renderEmpty(); return; }
   const f = d.features;
-  document.getElementById('featureTitle').textContent = '精细运动 — 实时特征';
+  document.getElementById('featureTitle').textContent = 'Fine Motor - Real-Time Features';
   document.getElementById('featureContent').innerHTML = `
     <div class="feature-card" style="text-align:center;padding:20px">
-      <div class="feature-label">拇指-食指距离</div>
+      <div class="feature-label">Thumb-Index Distance</div>
       <div class="feature-value" style="font-size:36px;${f.is_pinching ? 'color:var(--success)' : ''}">${f.thumb_index_distance}</div>
       <div style="font-size:13px;margin-top:4px;color:${f.is_pinching ? 'var(--success)' : 'var(--text2)'}">
-        ${f.is_pinching ? '🤏 捏合中' : '手指张开'}
+        ${f.is_pinching ? '🤏 Pinching' : 'Fingers Open'}
       </div>
     </div>
     <div class="feature-row">
       <div class="feature-card">
-        <div class="feature-label">捏合次数</div>
+        <div class="feature-label">Pinch Count</div>
         <div class="feature-value normal">${f.grasp_count}</div>
       </div>
       <div class="feature-card">
-        <div class="feature-label">手指张开度</div>
+        <div class="feature-label">Finger Spread</div>
         <div class="feature-value">${f.finger_spread}</div>
       </div>
     </div>
     <div class="feature-row">
       <div class="feature-card">
-        <div class="feature-label">释放次数</div>
+        <div class="feature-label">Release Count</div>
         <div class="feature-value">${f.release_count}</div>
       </div>
       <div class="feature-card">
-        <div class="feature-label">放置动作</div>
+        <div class="feature-label">Placement Count</div>
         <div class="feature-value">${f.placement_count}</div>
       </div>
     </div>
     <div class="feature-card">
-      <div class="feature-label">手掌状态</div>
-      <div class="feature-value">${f.hand_open ? '🖐 张开' : '✊ 握拳'}</div>
+      <div class="feature-label">Hand State</div>
+      <div class="feature-value">${f.hand_open ? '🖐 Open' : '✊ Fist'}</div>
     </div>`;
 }
 
 function renderAttentionFeatures(d) {
   if (!d.features || Object.keys(d.features).length === 0) { renderEmpty(); return; }
   const f = d.features;
-  document.getElementById('featureTitle').textContent = '共同注意力 — 实时特征';
+  document.getElementById('featureTitle').textContent = 'Joint Attention - Real-Time Features';
 
   let gazeHtml = '';
   if (f.gaze_direction !== undefined) {
@@ -808,13 +808,13 @@ function renderAttentionFeatures(d) {
     const oy = (f.eye_offset_y || 0) * 200;
     gazeHtml = `
       <div class="feature-card" style="text-align:center">
-        <div class="feature-label">视线方向</div>
+        <div class="feature-label">Gaze Direction</div>
         <div class="gaze-indicator">
           <div class="gaze-dot" style="transform:translate(calc(-50% + ${ox}px), calc(-50% + ${oy}px))"></div>
-          <span class="gaze-label top">上</span>
-          <span class="gaze-label bottom">下</span>
-          <span class="gaze-label left">左</span>
-          <span class="gaze-label right">右</span>
+          <span class="gaze-label top">Up</span>
+          <span class="gaze-label bottom">Down</span>
+          <span class="gaze-label left">Left</span>
+          <span class="gaze-label right">Right</span>
         </div>
         <div style="font-size:16px;font-weight:700;margin-top:4px">${gazeLabel(f.gaze_direction)}</div>
       </div>`;
@@ -825,21 +825,21 @@ function renderAttentionFeatures(d) {
     headHtml = `
       <div class="feature-row">
         <div class="feature-card">
-          <div class="feature-label">头部偏航 (Yaw)</div>
+          <div class="feature-label">Head Yaw</div>
           <div class="feature-value">${f.head_yaw}°</div>
         </div>
         <div class="feature-card">
-          <div class="feature-label">头部俯仰 (Pitch)</div>
+          <div class="feature-label">Head Pitch</div>
           <div class="feature-value">${f.head_pitch}°</div>
         </div>
       </div>
       <div class="feature-row">
         <div class="feature-card">
-          <div class="feature-label">点头次数</div>
+          <div class="feature-label">Nod Count</div>
           <div class="feature-value">${f.nod_count}</div>
         </div>
         <div class="feature-card">
-          <div class="feature-label">摇头次数</div>
+          <div class="feature-label">Shake Count</div>
           <div class="feature-value">${f.shake_count}</div>
         </div>
       </div>`;
@@ -849,37 +849,37 @@ function renderAttentionFeatures(d) {
   if (f.is_pointing !== undefined) {
     pointHtml = `
       <div class="feature-card">
-        <div class="feature-label">指向手势</div>
+        <div class="feature-label">Pointing Gesture</div>
         <div class="feature-value ${f.is_pointing ? 'normal' : ''}">
-          ${f.is_pointing ? '👆 检测到指向' : '— 未检测到'}
+          ${f.is_pointing ? '👆 Detected' : '— Not Detected'}
         </div>
-        <div style="font-size:12px;color:var(--text2);margin-top:4px">指向比例: ${f.pointing_ratio}</div>
+        <div style="font-size:12px;color:var(--text2);margin-top:4px">Pointing Ratio: ${f.pointing_ratio}</div>
       </div>`;
   }
 
   document.getElementById('featureContent').innerHTML = gazeHtml + headHtml + pointHtml +
     `<div class="feature-card">
-      <div class="feature-label">视线转移次数</div>
+      <div class="feature-label">Gaze Shift Count</div>
       <div class="feature-value">${f.gaze_shift_count || 0}</div>
     </div>`;
 }
 
 function renderPainFeatures(d) {
-  document.getElementById('featureTitle').textContent = '疼痛监测 — NFCS';
+  document.getElementById('featureTitle').textContent = 'Pain Monitor - NFCS';
 
   if (d.calibrating) {
     document.getElementById('featureContent').innerHTML = `
       <div style="text-align:center;padding:30px 0">
         <div style="font-size:32px;margin-bottom:12px">⏳</div>
-        <div style="font-size:14px">校准中... ${Math.round((d.calibration_progress||0)*100)}%</div>
-        <div style="font-size:12px;color:var(--text2);margin-top:6px">请让儿童保持自然表情</div>
+        <div style="font-size:14px">Calibrating... ${Math.round((d.calibration_progress||0)*100)}%</div>
+        <div style="font-size:12px;color:var(--text2);margin-top:6px">Please keep the child in a natural facial expression</div>
       </div>`;
     return;
   }
 
   if (!d.au_activations || Object.keys(d.au_activations).length === 0) { renderEmpty(); return; }
 
-  const auNames = {AU4:'眉弓收缩',AU6:'脸颊上提',AU7:'眼睑收紧',AU9:'鼻唇沟',AU10:'上唇提升',AU20:'唇拉伸',AU25:'唇张开',AU43:'闭眼'};
+  const auNames = {AU4:'Brow Lowerer',AU6:'Cheek Raiser',AU7:'Lid Tightener',AU9:'Nose Wrinkler',AU10:'Upper Lip Raiser',AU20:'Lip Stretcher',AU25:'Lips Part',AU43:'Eyes Closed'};
   let auHtml = '<div class="au-section">';
   for (const [code, val] of Object.entries(d.au_activations)) {
     const pct = Math.round(val * 100);
@@ -898,22 +898,22 @@ function renderPainFeatures(d) {
 
   document.getElementById('featureContent').innerHTML = `
     <div class="feature-card" style="text-align:center;padding:20px">
-      <div class="feature-label">NFCS 疼痛评分</div>
+      <div class="feature-label">NFCS Pain Score</div>
       <div class="feature-value ${nfcsColor}" style="font-size:48px">${nfcs}</div>
-      <div style="font-size:12px;color:var(--text2)">&lt;1.5 正常 | 1.5-3 临界 | &ge;3 疼痛</div>
+      <div style="font-size:12px;color:var(--text2)">&lt;1.5 Normal | 1.5-3 Borderline | &ge;3 Pain</div>
     </div>
-    <h4 style="font-size:12px;color:var(--text2);margin:12px 0 8px;text-transform:uppercase">AU 单元激活</h4>
+    <h4 style="font-size:12px;color:var(--text2);margin:12px 0 8px;text-transform:uppercase">AU Activations</h4>
     ${auHtml}`;
 }
 
 function renderEmpty() {
   document.getElementById('featureContent').innerHTML =
-    '<div style="text-align:center;color:var(--text2);padding:30px 0">未检测到目标</div>';
+    '<div style="text-align:center;color:var(--text2);padding:30px 0">No target detected</div>';
 }
 
 function gazeLabel(dir) {
-  const map = {center:'中心',left:'左',right:'右',up:'上',down:'下',
-    left_up:'左上',right_up:'右上',left_down:'左下',right_down:'右下'};
+  const map = {center:'Center',left:'Left',right:'Right',up:'Up',down:'Down',
+    left_up:'Upper Left',right_up:'Upper Right',left_down:'Lower Left',right_down:'Lower Right'};
   return map[dir] || dir;
 }
 
@@ -925,7 +925,7 @@ updateLegend();
 
 function requestAssessment() {
   if (!ws || ws.readyState !== WebSocket.OPEN) {
-    alert('请先开始检测并采集数据后再生成评估');
+    alert('Please start assessment and collect data before generating a report.');
     return;
   }
   ws.send(JSON.stringify({type: 'assess'}));
@@ -936,8 +936,8 @@ function showAssessmentModal(data) {
   if (existing) existing.remove();
 
   const classLabels = {
-    normal: '发育正常', advanced: '发育超前', borderline: '边界观察',
-    mild_delay: '轻度落后', significant_delay: '显著落后', at_risk_asd: 'ASD风险',
+    normal: 'Development on Track', advanced: 'Advanced Development', borderline: 'Borderline Observation',
+    mild_delay: 'Mild Delay', significant_delay: 'Significant Delay', at_risk_asd: 'ASD Risk',
   };
   const classEmojis = {
     normal: '✅', advanced: '🌟', borderline: '🔶',
@@ -952,7 +952,7 @@ function showAssessmentModal(data) {
   for (const d of (data.domain_scores || [])) {
     const barColor = d.score_pct >= 70 ? '#10b981' : d.score_pct >= 40 ? '#f59e0b' : '#ef4444';
     const ageDiff = d.age_difference_months;
-    const ageText = ageDiff > 0 ? `超前${ageDiff}个月` : ageDiff < 0 ? `落后${Math.abs(ageDiff)}个月` : '符合月龄';
+    const ageText = ageDiff > 0 ? `${ageDiff} months ahead` : ageDiff < 0 ? `${Math.abs(ageDiff)} months behind` : 'Age-appropriate';
     const ageColor = ageDiff > 0 ? '#3b82f6' : ageDiff < 0 ? '#ef4444' : '#10b981';
 
     let milestonesHtml = '';
@@ -970,14 +970,14 @@ function showAssessmentModal(data) {
       <div class="domain-card">
         <div class="domain-header">
           <span class="domain-name">${d.domain_cn}</span>
-          <span class="domain-age" style="color:${ageColor}">${ageText} (${d.developmental_age_months}月龄水平)</span>
+          <span class="domain-age" style="color:${ageColor}">${ageText} (${d.developmental_age_months}-month level)</span>
         </div>
         <div class="domain-bar"><div class="domain-fill" style="width:${d.score_pct}%;background:${barColor}"></div></div>
         <div style="display:flex;justify-content:space-between;font-size:12px;color:var(--text2);margin-bottom:6px">
-          <span>达成 ${d.achieved_count}/${d.expected_count}</span>
+          <span>Achieved ${d.achieved_count}/${d.expected_count}</span>
           <span style="font-weight:700">${d.score_pct}%</span>
         </div>
-        <div class="domain-milestones">${milestonesHtml || '<span style="color:var(--text2)">暂无数据</span>'}</div>
+        <div class="domain-milestones">${milestonesHtml || '<span style="color:var(--text2)">No data yet</span>'}</div>
       </div>`;
   }
 
@@ -985,19 +985,19 @@ function showAssessmentModal(data) {
   let asdHtml = '';
   if (data.asd_screening) {
     const asd = data.asd_screening;
-    const riskLabels = {low:'低风险', medium:'中风险', high:'高风险'};
+    const riskLabels = {low:'Low Risk', medium:'Medium Risk', high:'High Risk'};
     const riskClass = 'asd-' + asd.risk_level;
     asdHtml = `
       <div class="asd-card">
         <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
-          <span style="font-weight:700;font-size:15px">ASD 自闭症谱系筛查 (M-CHAT-R)</span>
+          <span style="font-weight:700;font-size:15px">ASD Screening (M-CHAT-R)</span>
           <span class="asd-risk ${riskClass}">${riskLabels[asd.risk_level]}</span>
         </div>
         <div style="font-size:13px;color:var(--text2);margin-bottom:8px">
-          评估项: ${asd.items_assessed} | 未通过: ${asd.items_failed} | 关键项未通过: ${asd.critical_items_failed}
+          Items assessed: ${asd.items_assessed} | Failed: ${asd.items_failed} | Critical failed: ${asd.critical_items_failed}
         </div>
         ${asd.failed_items.length ? `<div style="font-size:13px">
-          <div style="color:var(--text2);margin-bottom:4px">未通过项目:</div>
+          <div style="color:var(--text2);margin-bottom:4px">Failed items:</div>
           ${asd.failed_items.map(i => `<div style="color:var(--warning);padding:2px 0">• ${i}</div>`).join('')}
         </div>` : ''}
         ${asd.note ? `<div style="font-size:12px;color:var(--text2);margin-top:6px;font-style:italic">${asd.note}</div>` : ''}
@@ -1018,7 +1018,7 @@ function showAssessmentModal(data) {
       <button class="modal-close" onclick="this.closest('.modal-overlay').remove()">&times;</button>
 
       <div style="text-align:center;margin-bottom:24px">
-        <div style="font-size:14px;color:var(--text2);margin-bottom:8px">发育评估报告 — ${data.child_age_months}月龄</div>
+        <div style="font-size:14px;color:var(--text2);margin-bottom:8px">Development Assessment Report - ${data.child_age_months} months</div>
         <div class="classification-badge ${clsClass}">${clsEmoji} ${clsLabel}</div>
         <div style="margin-top:10px;font-size:14px;color:var(--text2)">${data.age_equivalent_label}</div>
         <div style="margin-top:6px">
@@ -1027,18 +1027,18 @@ function showAssessmentModal(data) {
         </div>
       </div>
 
-      <h4 style="font-size:14px;color:var(--text2);margin-bottom:10px;text-transform:uppercase;letter-spacing:1px">各领域评分</h4>
+      <h4 style="font-size:14px;color:var(--text2);margin-bottom:10px;text-transform:uppercase;letter-spacing:1px">Domain Scores</h4>
       ${domainsHtml}
 
       ${asdHtml}
 
-      <h4 style="font-size:14px;color:var(--text2);margin:16px 0 10px;text-transform:uppercase;letter-spacing:1px">建议</h4>
+      <h4 style="font-size:14px;color:var(--text2);margin:16px 0 10px;text-transform:uppercase;letter-spacing:1px">Recommendations</h4>
       ${recHtml}
 
       <div class="disclaimer-box">${data.disclaimer}</div>
 
       <div style="text-align:center;margin-top:16px">
-        <button onclick="window.print()" style="padding:8px 24px;border-radius:8px;border:1px solid var(--border);background:transparent;color:var(--text);cursor:pointer;font-size:13px">🖨 打印报告</button>
+        <button onclick="window.print()" style="padding:8px 24px;border-radius:8px;border:1px solid var(--border);background:transparent;color:var(--text);cursor:pointer;font-size:13px">🖨 Print Report</button>
       </div>
     </div>`;
 
