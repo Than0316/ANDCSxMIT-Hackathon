@@ -209,6 +209,63 @@ canvas#overlay { position:absolute; top:0; left:0; width:100%; height:100%; poin
   .modal-close { display:none; }
   .domain-card, .asd-card { border:1px solid #ccc; }
 }
+
+/* Upload Video Mode */
+.mode-tabs { display:flex; gap:4px; margin-bottom:14px; }
+.mode-tab {
+  flex:1; padding:7px 0; border-radius:6px; border:1px solid var(--border);
+  background:transparent; color:var(--text2); font-size:13px; font-weight:600;
+  cursor:pointer; transition:all 0.15s;
+}
+.mode-tab.active { background:var(--primary); color:white; border-color:var(--primary); }
+
+.upload-panel { display:none; }
+.upload-panel.visible { display:block; }
+
+.upload-drop-area {
+  border:2px dashed var(--border); border-radius:10px; padding:28px 16px;
+  text-align:center; cursor:pointer; transition:border-color 0.2s;
+  margin-bottom:12px;
+}
+.upload-drop-area:hover, .upload-drop-area.drag-over { border-color:var(--primary); }
+.upload-drop-area .big { font-size:36px; margin-bottom:8px; }
+.upload-drop-area p { font-size:13px; color:var(--text2); }
+.upload-drop-area input[type=file] { display:none; }
+
+.focus-select-row { margin-bottom:10px; }
+.focus-select-row label { font-size:12px; color:var(--text2); display:block; margin-bottom:4px; }
+.focus-select-row select {
+  width:100%; padding:8px 10px; border-radius:6px; border:1px solid var(--border);
+  background:var(--card2); color:var(--text); font-size:14px; outline:none;
+}
+.focus-select-row select:focus { border-color:var(--primary); }
+
+.upload-btn {
+  width:100%; padding:11px; border-radius:8px; border:none;
+  background:var(--primary); color:white; font-size:14px; font-weight:700;
+  cursor:pointer; transition:background 0.2s;
+}
+.upload-btn:hover { background:#4338ca; }
+.upload-btn:disabled { background:var(--card2); color:var(--text2); cursor:not-allowed; }
+
+.upload-progress { margin-top:10px; display:none; }
+.upload-progress-bar { height:6px; background:var(--card2); border-radius:3px; overflow:hidden; }
+.upload-progress-fill { height:100%; background:var(--primary); border-radius:3px; transition:width 0.3s; }
+.upload-status { font-size:12px; color:var(--text2); margin-top:4px; text-align:center; }
+
+/* Playback controls */
+.playback-controls {
+  position:absolute; bottom:10px; left:50%; transform:translateX(-50%);
+  display:none; gap:10px; align-items:center;
+  background:rgba(0,0,0,0.75); padding:8px 18px; border-radius:20px;
+}
+.play-btn {
+  background:var(--primary); border:none; color:white; border-radius:50%;
+  width:32px; height:32px; font-size:16px; cursor:pointer; display:flex;
+  align-items:center; justify-content:center;
+}
+.playback-slider { width:160px; accent-color:var(--primary); }
+.playback-time { font-size:12px; color:rgba(255,255,255,0.8); font-family:monospace; min-width:70px; }
 </style>
 </head>
 <body>
@@ -242,31 +299,68 @@ canvas#overlay { position:absolute; top:0; left:0; width:100%; height:100%; poin
       <button class="task-btn" data-task="pain_monitor">
         <span class="icon">😣</span> Pain Monitor
       </button>
+      <button class="task-btn" data-task="motion_monitor">
+        <span class="icon">🦾</span> Motion Monitor
+      </button>
     </div>
 
     <div class="config-section">
       <h3>Settings</h3>
-      <div class="config-row">
-        <label>Child Age (months)</label>
-        <input type="number" id="ageInput" value="24" min="0" max="60">
+      <!-- Mode tabs (shown only for motion_monitor) -->
+      <div class="mode-tabs" id="modeTabs" style="display:none">
+        <button class="mode-tab active" id="tabLive" onclick="switchMode('live')">📷 Live</button>
+        <button class="mode-tab" id="tabUpload" onclick="switchMode('upload')">📂 Upload</button>
       </div>
-      <div class="config-row">
-        <label>Camera</label>
-        <select id="cameraSelect"><option value="">Loading...</option></select>
+
+      <!-- Upload panel (hidden by default) -->
+      <div class="upload-panel" id="uploadPanel">
+        <div class="upload-drop-area" id="dropArea" onclick="document.getElementById('videoFileInput').click()">
+          <div class="big">🎬</div>
+          <p id="dropLabel">Click or drag a video here<br><span style="font-size:11px">MP4 · AVI · MOV · MKV · WEBM</span></p>
+          <input type="file" id="videoFileInput" accept=".mp4,.avi,.mov,.mkv,.webm" onchange="onFileChosen(this)">
+        </div>
+        <div class="focus-select-row">
+          <label>Focus Target</label>
+          <select id="focusSelect">
+            <option value="full_body">🦴 Full Body</option>
+            <option value="arms">💪 Arms</option>
+            <option value="legs">🦵 Legs</option>
+            <option value="hands">🤏 Hands</option>
+            <option value="head">🧠 Head</option>
+            <option value="torso">🫀 Torso</option>
+          </select>
+        </div>
+        <button class="upload-btn" id="uploadRunBtn" onclick="runUploadTracking()" disabled>▶ Analyze Video</button>
+        <div class="upload-progress" id="uploadProgress">
+          <div class="upload-progress-bar"><div class="upload-progress-fill" id="uploadProgressFill" style="width:0%"></div></div>
+          <div class="upload-status" id="uploadStatus">Processing...</div>
+        </div>
       </div>
-      <div class="config-row">
-        <label>Streaming FPS</label>
-        <select id="fpsSelect">
-          <option value="5">5 FPS (Low Resource)</option>
-          <option value="8" selected>8 FPS (Recommended)</option>
-          <option value="12">12 FPS (High Precision)</option>
-        </select>
-      </div>
-      <button class="start-btn go" id="startBtn" onclick="toggleStream()">Start Assessment</button>
-      <button class="assess-btn" id="assessBtn" onclick="requestAssessment()" style="display:none">
-        📋 Development Assessment Report
-      </button>
-    </div>
+
+      <!-- Live settings (shown by default) -->
+      <div id="liveSettings">
+        <div class="config-row">
+          <label>Child Age (months)</label>
+          <input type="number" id="ageInput" value="24" min="0" max="60">
+        </div>
+        <div class="config-row">
+          <label>Camera</label>
+          <select id="cameraSelect"><option value="">Loading...</option></select>
+        </div>
+        <div class="config-row">
+          <label>Streaming FPS</label>
+          <select id="fpsSelect">
+            <option value="5">5 FPS (Low Resource)</option>
+            <option value="8" selected>8 FPS (Recommended)</option>
+            <option value="12">12 FPS (High Precision)</option>
+          </select>
+        </div>
+        <button class="start-btn go" id="startBtn" onclick="toggleStream()">Start Assessment</button>
+        <button class="assess-btn" id="assessBtn" onclick="requestAssessment()" style="display:none">
+          📋 Development Assessment Report
+        </button>
+      </div><!-- /liveSettings -->
+    </div><!-- /config-section -->
 
     <div class="legend" id="legendSection">
       <div class="legend-title">Legend</div>
@@ -290,6 +384,12 @@ canvas#overlay { position:absolute; top:0; left:0; width:100%; height:100%; poin
     <div class="calibration-bar" id="calibrationBar">
       Calibrating facial baseline...<br>Please keep a natural expression
       <div class="bar"><div class="bar-fill" id="calBarFill" style="width:0%"></div></div>
+    </div>
+    <!-- Uploaded video playback controls -->
+    <div class="playback-controls" id="playbackControls">
+      <button class="play-btn" id="playPauseBtn" onclick="togglePlayback()">⏸</button>
+      <input type="range" class="playback-slider" id="playbackSlider" min="0" value="0" step="1" oninput="seekPlayback(this.value)">
+      <span class="playback-time" id="playbackTime">0.00s / 0.00s</span>
     </div>
   </div>
 
@@ -348,11 +448,23 @@ document.querySelectorAll('.task-btn').forEach(btn => {
     currentTask = btn.dataset.task;
     updateLegend();
     resetFeaturePanel();
+    // Show mode tabs only for motion_monitor
+    const tabs = document.getElementById('modeTabs');
+    if (currentTask === 'motion_monitor') {
+      tabs.style.display = 'flex';
+    } else {
+      tabs.style.display = 'none';
+      switchMode('live');
+    }
   });
 });
 
 function updateLegend() {
   const legends = {
+    motion_monitor: `
+      <div class="legend-item"><span class="legend-dot" style="background:#00ff00"></span> Body Skeleton</div>
+      <div class="legend-item"><span class="legend-dot" style="background:#ffff00"></span> Head / Face Joints</div>
+      <div class="legend-item"><span class="legend-dot" style="background:#ff6b35"></span> Hand Landmarks</div>`,
     gross_motor: `
       <div class="legend-item"><span class="legend-dot" style="background:#00ff00"></span> Skeletal Landmarks</div>
       <div class="legend-item"><span class="legend-dot" style="background:#ff0"></span> Joint Angles</div>
@@ -508,6 +620,9 @@ function handleResult(data) {
   } else if (currentTask === 'pain_monitor') {
     drawFaceMeshOutline(data.landmarks);
     renderPainFeatures(data);
+  } else if (currentTask === 'motion_monitor') {
+    drawMotionMonitor(data);
+    renderMotionMonitorFeatures(data);
   }
 
   // Score overlay
@@ -906,6 +1021,180 @@ function renderPainFeatures(d) {
     ${auHtml}`;
 }
 
+function renderMotionMonitorFeatures(d) {
+  document.getElementById('featureTitle').textContent = 'Motion Monitor - Live Body Tracking';
+  if (!d.detected || !d.features || Object.keys(d.features).length === 0) {
+    renderEmpty(); return;
+  }
+  const f = d.features;
+
+  const angColor = a => a > 160 ? 'normal' : a > 100 ? '' : 'warning';
+  const visColor = v => v > 0.7 ? 'normal' : v > 0.4 ? 'warning' : 'danger';
+  const intensityColor = i => i < 0.05 ? '' : i < 0.3 ? 'normal' : 'warning';
+
+  document.getElementById('featureContent').innerHTML = `
+    <div class="feature-card" style="text-align:center;padding:12px">
+      <div class="feature-label">Motion Intensity</div>
+      <div class="feature-value ${intensityColor(f.motion_intensity)}" style="font-size:28px">
+        ${f.motion_intensity !== undefined ? f.motion_intensity.toFixed(3) : '—'}
+      </div>
+      <div style="font-size:11px;color:var(--text2);margin-top:2px">wrist velocity (normalized)</div>
+    </div>
+
+    <h4 style="font-size:11px;color:var(--text2);text-transform:uppercase;letter-spacing:1px;margin:10px 0 6px">Joint Angles</h4>
+    <div class="feature-row">
+      <div class="feature-card">
+        <div class="feature-label">L Elbow</div>
+        <div class="feature-value ${angColor(f.left_elbow_angle)}">${f.left_elbow_angle !== undefined ? f.left_elbow_angle + '°' : '—'}</div>
+      </div>
+      <div class="feature-card">
+        <div class="feature-label">R Elbow</div>
+        <div class="feature-value ${angColor(f.right_elbow_angle)}">${f.right_elbow_angle !== undefined ? f.right_elbow_angle + '°' : '—'}</div>
+      </div>
+    </div>
+    <div class="feature-row">
+      <div class="feature-card">
+        <div class="feature-label">L Knee</div>
+        <div class="feature-value ${angColor(f.left_knee_angle)}">${f.left_knee_angle !== undefined ? f.left_knee_angle + '°' : '—'}</div>
+      </div>
+      <div class="feature-card">
+        <div class="feature-label">R Knee</div>
+        <div class="feature-value ${angColor(f.right_knee_angle)}">${f.right_knee_angle !== undefined ? f.right_knee_angle + '°' : '—'}</div>
+      </div>
+    </div>
+    <div class="feature-row">
+      <div class="feature-card">
+        <div class="feature-label">L Shoulder</div>
+        <div class="feature-value">${f.left_shoulder_angle !== undefined ? f.left_shoulder_angle + '°' : '—'}</div>
+      </div>
+      <div class="feature-card">
+        <div class="feature-label">R Shoulder</div>
+        <div class="feature-value">${f.right_shoulder_angle !== undefined ? f.right_shoulder_angle + '°' : '—'}</div>
+      </div>
+    </div>
+    <div class="feature-row">
+      <div class="feature-card">
+        <div class="feature-label">L Hip</div>
+        <div class="feature-value">${f.left_hip_angle !== undefined ? f.left_hip_angle + '°' : '—'}</div>
+      </div>
+      <div class="feature-card">
+        <div class="feature-label">R Hip</div>
+        <div class="feature-value">${f.right_hip_angle !== undefined ? f.right_hip_angle + '°' : '—'}</div>
+      </div>
+    </div>
+    <div class="feature-card">
+      <div class="feature-label">Trunk Lean</div>
+      <div class="feature-value ${f.trunk_lean > 20 ? 'warning' : 'normal'}">${f.trunk_lean !== undefined ? f.trunk_lean + '°' : '—'}</div>
+    </div>
+
+    <h4 style="font-size:11px;color:var(--text2);text-transform:uppercase;letter-spacing:1px;margin:10px 0 6px">Visibility</h4>
+    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px">
+      <div class="feature-card" style="text-align:center;padding:8px">
+        <div class="feature-label">Arms</div>
+        <div class="feature-value ${visColor(f.visibility_arms)}" style="font-size:16px">${f.visibility_arms !== undefined ? Math.round(f.visibility_arms*100)+'%' : '—'}</div>
+      </div>
+      <div class="feature-card" style="text-align:center;padding:8px">
+        <div class="feature-label">Torso</div>
+        <div class="feature-value ${visColor(f.visibility_torso)}" style="font-size:16px">${f.visibility_torso !== undefined ? Math.round(f.visibility_torso*100)+'%' : '—'}</div>
+      </div>
+      <div class="feature-card" style="text-align:center;padding:8px">
+        <div class="feature-label">Legs</div>
+        <div class="feature-value ${visColor(f.visibility_legs)}" style="font-size:16px">${f.visibility_legs !== undefined ? Math.round(f.visibility_legs*100)+'%' : '—'}</div>
+      </div>
+    </div>
+
+    <div class="feature-row" style="margin-top:8px">
+      <div class="feature-card">
+        <div class="feature-label">Hands Detected</div>
+        <div class="feature-value ${f.hands_detected > 0 ? 'normal' : ''}">${f.hands_detected !== undefined ? f.hands_detected : '—'}</div>
+      </div>
+      <div class="feature-card">
+        <div class="feature-label">Face</div>
+        <div class="feature-value ${d.face_detected ? 'normal' : 'warning'}">${d.face_detected ? '✓ Detected' : '— Not Found'}</div>
+      </div>
+    </div>
+    ${d.features.head_yaw !== undefined ? `
+    <div class="feature-row">
+      <div class="feature-card"><div class="feature-label">Head Yaw</div><div class="feature-value">${f.head_yaw}°</div></div>
+      <div class="feature-card"><div class="feature-label">Head Pitch</div><div class="feature-value">${f.head_pitch}°</div></div>
+    </div>` : ''}`;
+}
+
+function drawMotionMonitor(d) {
+  const w = overlay.width, h = overlay.height;
+
+  // Draw full-body pose skeleton with color-coded joints
+  if (d.pose_landmarks && d.pose_landmarks.length) {
+    const lms = d.pose_landmarks;
+    const connections = [
+      [11,12],[11,13],[13,15],[12,14],[14,16],
+      [11,23],[12,24],[23,24],
+      [23,25],[25,27],[27,29],[27,31],
+      [24,26],[26,28],[28,30],[28,32],
+      [0,11],[0,12]
+    ];
+    // Draw bones
+    ctx.lineWidth = 2;
+    for (const [a, b] of connections) {
+      if (!lms[a] || !lms[b]) continue;
+      const visA = lms[a][3] || 0;
+      const visB = lms[b][3] || 0;
+      const vis = (visA + visB) / 2;
+      ctx.strokeStyle = `rgba(0,255,0,${Math.max(0.2, vis)})`;
+      ctx.beginPath();
+      ctx.moveTo(lms[a][0]*w, lms[a][1]*h);
+      ctx.lineTo(lms[b][0]*w, lms[b][1]*h);
+      ctx.stroke();
+    }
+    // Draw joints with color by body region
+    const jointColors = {
+      face: '#ffff00',
+      upper: '#00ff00',
+      lower: '#00aaff',
+    };
+    for (let i = 0; i < lms.length; i++) {
+      if (!lms[i]) continue;
+      const vis = lms[i][3] || 0;
+      if (vis < 0.1) continue;
+      let color = jointColors.upper;
+      if (i <= 10) color = jointColors.face;
+      else if (i >= 23) color = jointColors.lower;
+      ctx.fillStyle = color;
+      ctx.globalAlpha = Math.max(0.3, vis);
+      ctx.beginPath();
+      ctx.arc(lms[i][0]*w, lms[i][1]*h, i <= 10 ? 2 : 5, 0, Math.PI*2);
+      ctx.fill();
+    }
+    ctx.globalAlpha = 1.0;
+  }
+
+  // Draw hands (orange)
+  if (d.hand_landmarks && d.hand_landmarks.length) {
+    const handConns = [
+      [0,1],[1,2],[2,3],[3,4],[0,5],[5,6],[6,7],[7,8],
+      [5,9],[9,10],[10,11],[11,12],[9,13],[13,14],[14,15],[15,16],
+      [13,17],[17,18],[18,19],[19,20],[0,17]
+    ];
+    for (const hand of d.hand_landmarks) {
+      ctx.strokeStyle = '#ff6b35';
+      ctx.lineWidth = 2;
+      for (const [a, b] of handConns) {
+        if (!hand[a] || !hand[b]) continue;
+        ctx.beginPath();
+        ctx.moveTo(hand[a][0]*w, hand[a][1]*h);
+        ctx.lineTo(hand[b][0]*w, hand[b][1]*h);
+        ctx.stroke();
+      }
+      ctx.fillStyle = '#ff6b35';
+      for (const p of hand) {
+        ctx.beginPath();
+        ctx.arc(p[0]*w, p[1]*h, 3, 0, Math.PI*2);
+        ctx.fill();
+      }
+    }
+  }
+}
+
 function renderEmpty() {
   document.getElementById('featureContent').innerHTML =
     '<div style="text-align:center;color:var(--text2);padding:30px 0">No target detected</div>';
@@ -920,8 +1209,291 @@ function gazeLabel(dir) {
 updateLegend();
 
 // ═══════════════════════════════════════════════════
-// Assessment
+// Upload Video Mode
 // ═══════════════════════════════════════════════════
+
+let uploadFrames = [];
+let uploadVideoMeta = null;
+let playbackInterval = null;
+let playbackIdx = 0;
+let isPlaying = false;
+let uploadedVideoEl = null;   // <video> element for uploaded file preview
+
+// mode-tabs visibility is managed in the task-btn click handler above
+
+function switchMode(mode) {
+  document.getElementById('tabLive').classList.toggle('active', mode === 'live');
+  document.getElementById('tabUpload').classList.toggle('active', mode === 'upload');
+  document.getElementById('uploadPanel').classList.toggle('visible', mode === 'upload');
+  document.getElementById('liveSettings').style.display = mode === 'live' ? '' : 'none';
+
+  if (mode === 'upload') {
+    stopStream();
+    stopPlayback();
+    document.getElementById('placeholder').style.display = '';
+    document.getElementById('webcam').style.display = 'none';
+    document.getElementById('playbackControls').style.display = 'none';
+    resetFeaturePanel();
+  }
+}
+
+// Drag-and-drop
+const dropArea = document.getElementById('dropArea');
+dropArea.addEventListener('dragover', e => { e.preventDefault(); dropArea.classList.add('drag-over'); });
+dropArea.addEventListener('dragleave', () => dropArea.classList.remove('drag-over'));
+dropArea.addEventListener('drop', e => {
+  e.preventDefault();
+  dropArea.classList.remove('drag-over');
+  const f = e.dataTransfer.files[0];
+  if (f) applyFile(f);
+});
+
+function onFileChosen(input) {
+  if (input.files[0]) applyFile(input.files[0]);
+}
+
+function applyFile(f) {
+  document.getElementById('dropLabel').innerHTML =
+    `🎬 <strong>${f.name}</strong><br><span style="font-size:11px">${(f.size/1024/1024).toFixed(1)} MB</span>`;
+  document.getElementById('uploadRunBtn').disabled = false;
+  document.getElementById('uploadRunBtn')._file = f;
+}
+
+async function runUploadTracking() {
+  const btn = document.getElementById('uploadRunBtn');
+  const f = btn._file;
+  if (!f) return;
+
+  const focus = document.getElementById('focusSelect').value;
+
+  // Show progress
+  const prog = document.getElementById('uploadProgress');
+  const fill = document.getElementById('uploadProgressFill');
+  const status = document.getElementById('uploadStatus');
+  prog.style.display = 'block';
+  fill.style.width = '10%';
+  status.textContent = 'Uploading…';
+  btn.disabled = true;
+
+  const form = new FormData();
+  form.append('file', f);
+  form.append('focus', focus);
+
+  try {
+    fill.style.width = '30%';
+    const resp = await fetch('/api/v1/motion/upload', { method: 'POST', body: form });
+    fill.style.width = '80%';
+    status.textContent = 'Processing landmarks…';
+
+    if (!resp.ok) {
+      const err = await resp.json().catch(() => ({ detail: resp.statusText }));
+      throw new Error(err.detail || resp.statusText);
+    }
+
+    const data = await resp.json();
+    fill.style.width = '100%';
+    status.textContent = `Done — ${data.processed_frames} frames analysed`;
+
+    uploadFrames = data.frames;
+    uploadVideoMeta = data;
+    startUploadPlayback(f, data);
+
+  } catch (e) {
+    status.textContent = '❌ ' + e.message;
+    fill.style.width = '0%';
+    btn.disabled = false;
+  }
+}
+
+function startUploadPlayback(file, meta) {
+  stopPlayback();
+
+  // Show the uploaded video in the video element
+  const vidEl = document.getElementById('webcam');
+  vidEl.srcObject = null;
+  vidEl.src = URL.createObjectURL(file);
+  vidEl.loop = false;
+  vidEl.muted = true;
+  vidEl.style.display = 'block';
+  document.getElementById('placeholder').style.display = 'none';
+
+  vidEl.addEventListener('loadedmetadata', () => { resizeOverlay(); }, { once: true });
+
+  const controls = document.getElementById('playbackControls');
+  const slider   = document.getElementById('playbackSlider');
+  const timeEl   = document.getElementById('playbackTime');
+  controls.style.display = 'flex';
+  slider.max = uploadFrames.length - 1;
+  slider.value = 0;
+  playbackIdx = 0;
+  isPlaying = true;
+  document.getElementById('playPauseBtn').textContent = '⏸';
+
+  const intervalMs = (meta.sample_every / meta.video_fps) * 1000;
+
+  function renderFrame(idx) {
+    if (idx >= uploadFrames.length) {
+      stopPlayback();
+      document.getElementById('playPauseBtn').textContent = '▶';
+      return;
+    }
+    const fd = uploadFrames[idx];
+    slider.value = idx;
+    const dur = uploadFrames[uploadFrames.length - 1]?.timestamp || 0;
+    timeEl.textContent = `${fd.timestamp.toFixed(2)}s / ${dur.toFixed(2)}s`;
+
+    // Sync video element
+    vidEl.currentTime = fd.timestamp;
+
+    // Draw skeleton overlay
+    ctx.clearRect(0, 0, overlay.width, overlay.height);
+    drawUploadSkeleton(fd);
+
+    // Update feature panel
+    renderUploadFeaturePanel(fd, meta.focus);
+  }
+
+  renderFrame(0);
+
+  playbackInterval = setInterval(() => {
+    if (!isPlaying) return;
+    playbackIdx++;
+    if (playbackIdx >= uploadFrames.length) {
+      stopPlayback();
+      document.getElementById('playPauseBtn').textContent = '▶';
+      return;
+    }
+    renderFrame(playbackIdx);
+  }, intervalMs);
+}
+
+function togglePlayback() {
+  isPlaying = !isPlaying;
+  document.getElementById('playPauseBtn').textContent = isPlaying ? '⏸' : '▶';
+}
+
+function seekPlayback(val) {
+  playbackIdx = parseInt(val);
+  if (uploadFrames[playbackIdx]) {
+    const fd = uploadFrames[playbackIdx];
+    const vidEl = document.getElementById('webcam');
+    vidEl.currentTime = fd.timestamp;
+    ctx.clearRect(0, 0, overlay.width, overlay.height);
+    drawUploadSkeleton(fd);
+    renderUploadFeaturePanel(fd, uploadVideoMeta?.focus || 'full_body');
+    const dur = uploadFrames[uploadFrames.length - 1]?.timestamp || 0;
+    document.getElementById('playbackTime').textContent = `${fd.timestamp.toFixed(2)}s / ${dur.toFixed(2)}s`;
+  }
+}
+
+function stopPlayback() {
+  if (playbackInterval) { clearInterval(playbackInterval); playbackInterval = null; }
+  isPlaying = false;
+}
+
+function drawUploadSkeleton(fd) {
+  const w = overlay.width, h = overlay.height;
+  const lms = fd.pose_landmarks;
+  const focusIdx = fd.focus_indices || [];
+  const conns = fd.connections || [];
+
+  if (lms && lms.length) {
+    // Build a lookup: focus_index[i] → lms[i]
+    const lmMap = {};
+    focusIdx.forEach((globalIdx, i) => { lmMap[globalIdx] = lms[i]; });
+
+    // Draw connections
+    ctx.lineWidth = 2;
+    for (const [a, b] of conns) {
+      const pa = focusIdx.length ? lmMap[a] : lms[a];
+      const pb = focusIdx.length ? lmMap[b] : lms[b];
+      if (!pa || !pb) continue;
+      const vis = ((pa[3] || 1) + (pb[3] || 1)) / 2;
+      ctx.strokeStyle = `rgba(0,255,0,${Math.max(0.2, vis)})`;
+      ctx.beginPath();
+      ctx.moveTo(pa[0]*w, pa[1]*h);
+      ctx.lineTo(pb[0]*w, pb[1]*h);
+      ctx.stroke();
+    }
+
+    // Draw joints
+    const allLms = focusIdx.length ? Object.values(lmMap) : lms;
+    for (let i = 0; i < allLms.length; i++) {
+      const p = allLms[i];
+      if (!p) continue;
+      const vis = p[3] || 1;
+      if (vis < 0.1) continue;
+      const globalIdx = focusIdx.length ? focusIdx[i] : i;
+      ctx.fillStyle = globalIdx <= 10 ? '#ffff00' : globalIdx >= 23 ? '#00aaff' : '#00ff00';
+      ctx.globalAlpha = Math.max(0.3, vis);
+      ctx.beginPath();
+      ctx.arc(p[0]*w, p[1]*h, 5, 0, Math.PI*2);
+      ctx.fill();
+    }
+    ctx.globalAlpha = 1.0;
+  }
+
+  // Draw hands
+  if (fd.hand_landmarks && fd.hand_landmarks.length) {
+    const handConns = [
+      [0,1],[1,2],[2,3],[3,4],[0,5],[5,6],[6,7],[7,8],
+      [5,9],[9,10],[10,11],[11,12],[9,13],[13,14],[14,15],[15,16],
+      [13,17],[17,18],[18,19],[19,20],[0,17]
+    ];
+    for (const hand of fd.hand_landmarks) {
+      ctx.strokeStyle = '#ff6b35'; ctx.lineWidth = 2;
+      for (const [a, b] of handConns) {
+        if (!hand[a] || !hand[b]) continue;
+        ctx.beginPath();
+        ctx.moveTo(hand[a][0]*w, hand[a][1]*h);
+        ctx.lineTo(hand[b][0]*w, hand[b][1]*h);
+        ctx.stroke();
+      }
+      ctx.fillStyle = '#ff6b35';
+      for (const p of hand) {
+        ctx.beginPath(); ctx.arc(p[0]*w, p[1]*h, 3, 0, Math.PI*2); ctx.fill();
+      }
+    }
+  }
+}
+
+function renderUploadFeaturePanel(fd, focus) {
+  document.getElementById('featureTitle').textContent = `Motion Tracking — ${focus.replace('_',' ')}`;
+  const f = fd.features || {};
+  const t = fd.timestamp;
+
+  let rows = `<div class="feature-card" style="text-align:center;padding:8px">
+    <div class="feature-label">Timestamp</div>
+    <div class="feature-value" style="font-size:20px">${t.toFixed(2)}s</div>
+  </div>`;
+
+  const angPairs = [
+    ['left_elbow_angle','right_elbow_angle','L Elbow','R Elbow'],
+    ['left_knee_angle','right_knee_angle','L Knee','R Knee'],
+    ['left_shoulder_angle','right_shoulder_angle','L Shoulder','R Shoulder'],
+    ['left_hip_angle','right_hip_angle','L Hip','R Hip'],
+  ];
+  for (const [lk, rk, ll, rl] of angPairs) {
+    if (f[lk] !== undefined || f[rk] !== undefined) {
+      rows += `<div class="feature-row">
+        <div class="feature-card"><div class="feature-label">${ll}</div><div class="feature-value">${f[lk] !== undefined ? f[lk]+'°' : '—'}</div></div>
+        <div class="feature-card"><div class="feature-label">${rl}</div><div class="feature-value">${f[rk] !== undefined ? f[rk]+'°' : '—'}</div></div>
+      </div>`;
+    }
+  }
+  if (f.trunk_lean !== undefined) {
+    rows += `<div class="feature-card"><div class="feature-label">Trunk Lean</div>
+      <div class="feature-value ${f.trunk_lean > 20 ? 'warning' : 'normal'}">${f.trunk_lean}°</div></div>`;
+  }
+  if (fd.hand_landmarks?.length) {
+    rows += `<div class="feature-card"><div class="feature-label">Hands Visible</div>
+      <div class="feature-value normal">${fd.hand_landmarks.length}</div></div>`;
+  }
+
+  document.getElementById('featureContent').innerHTML = rows || '<div style="color:var(--text2);text-align:center;padding:20px">No landmarks detected</div>';
+}
+
+
 
 function requestAssessment() {
   if (!ws || ws.readyState !== WebSocket.OPEN) {

@@ -26,6 +26,7 @@ from fastapi.staticfiles import StaticFiles
 from api.routes.assessment import router as assessment_router
 from api.routes.realtime import router as realtime_router
 from api.routes.report import router as report_router
+from api.routes.motion_upload import router as motion_upload_router
 
 STATIC_DIR = Path(__file__).resolve().parent / "static"
 
@@ -46,6 +47,7 @@ app.add_middleware(
 app.include_router(assessment_router)
 app.include_router(realtime_router)
 app.include_router(report_router)
+app.include_router(motion_upload_router)
 app.mount("/static", StaticFiles(directory=str(STATIC_DIR)), name="static")
 
 
