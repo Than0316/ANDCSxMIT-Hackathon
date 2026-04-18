@@ -26,6 +26,7 @@ from fastapi.staticfiles import StaticFiles
 from api.routes.assessment import router as assessment_router
 from api.routes.realtime import router as realtime_router
 from api.routes.report import router as report_router
+from api.routes.cry_analysis import router as cry_router
 
 STATIC_DIR = Path(__file__).resolve().parent / "static"
 
@@ -46,6 +47,7 @@ app.add_middleware(
 app.include_router(assessment_router)
 app.include_router(realtime_router)
 app.include_router(report_router)
+app.include_router(cry_router)
 app.mount("/static", StaticFiles(directory=str(STATIC_DIR)), name="static")
 
 
@@ -85,6 +87,11 @@ async def list_tasks():
                 "id": "pain_monitor",
                 "name": "Pain / Discomfort Monitoring",
                 "method": "Face Mesh → FACS AU geometric features → NFCS threshold scoring",
+            },
+            {
+                "id": "cry_analysis",
+                "name": "Baby Cry Analysis",
+                "method": "Audio feature extraction → fuzzy rule-based classification",
             },
         ]
     }

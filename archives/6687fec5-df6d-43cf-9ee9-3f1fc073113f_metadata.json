@@ -1,0 +1,18 @@
+{
+  "archive_id": "6687fec5-df6d-43cf-9ee9-3f1fc073113f",
+  "timestamp": "2026-04-18T17:31:30.683254",
+  "audio_file": "6687fec5-df6d-43cf-9ee9-3f1fc073113f_audio.wav",
+  "plot_file": "6687fec5-df6d-43cf-9ee9-3f1fc073113f_waveform.png",
+  "info": {
+    "duration_sec": 4.02,
+    "sample_rate": 22050,
+    "pitch_mean_hz": 118.55211438146733,
+    "pitch_std_hz": 18.97794633218928,
+    "pitch_min_hz": 88.6768339520361,
+    "pitch_max_hz": 173.30290453084095,
+    "rms_mean": 0.10157034546136856,
+    "rms_max": 0.42371150851249695,
+    "spectral_centroid_mean_hz": 1671.6220818361392,
+    "zero_crossing_rate_mean": 0.07264165768678162
+  }
+}
