@@ -62,6 +62,8 @@ async def realtime_stream(websocket: WebSocket, task: str):
                     scorer.update_from_attention(features)
                 elif task == "pain_monitor":
                     scorer.update_from_pain(result)
+                elif task == "motion_monitor":
+                    scorer.update_from_gross_motor(features)
 
                 await websocket.send_json(result)
 

@@ -100,11 +100,11 @@ class RealtimeProcessor:
         self.face_detector = None
         self.hand_detector = None
 
-        if task in ("gross_motor", "walking", "imitation"):
+        if task in ("gross_motor", "walking", "imitation", "motion_monitor"):
             self.pose_detector = PoseDetector()
         if task in ("joint_attention", "eye_gaze", "head_nod_shake", "pain_monitor"):
             self.face_detector = FaceMeshDetector()
-        if task in ("fine_motor", "pointing"):
+        if task in ("fine_motor", "pointing", "motion_monitor"):
             self.hand_detector = HandDetector()
         if task == "pointing":
             self.hand_detector = HandDetector()
@@ -125,6 +125,8 @@ class RealtimeProcessor:
             return self._process_joint_attention(bgr_frame, ts)
         elif self.task == "pain_monitor":
             return self._process_pain(bgr_frame, ts)
+        elif self.task == "motion_monitor":
+            return self._process_motion_monitor(bgr_frame, ts)
         return {"error": "unknown task"}
 
     # ─── Gross Motor ────────────────────────────────────────────
@@ -615,6 +617,105 @@ class RealtimeProcessor:
 
         return {"AU4": au4, "AU6": au6, "AU7": au7, "AU9": au9,
                 "AU10": au10, "AU20": au20, "AU25": au25, "AU43": au43}
+
+    # ─── Motion Monitor ─────────────────────────────────────────
+
+    def _process_motion_monitor(self, frame, ts) -> dict:
+        """Full-body motion monitor: pose + hands + face landmarks with joint angles."""
+        data: dict = {
+            "detected": False,
+            "pose_landmarks": [],
+            "hand_landmarks": [],
+            "face_detected": False,
+            "features": {},
+        }
+
+        # ── Pose (body skeleton) ──
+        if self.pose_detector:
+            pose_result = self.pose_detector.process(frame)
+            if pose_result.pose_landmarks:
+                lm = pose_result.pose_landmarks.landmark
+                data["pose_landmarks"] = [[l.x, l.y, l.z, l.visibility] for l in lm]
+                data["detected"] = True
+
+                # Key points
+                ls = landmark_to_array(lm[11])
+                rs = landmark_to_array(lm[12])
+                le = landmark_to_array(lm[13])
+                re = landmark_to_array(lm[14])
+                lw = landmark_to_array(lm[15])
+                rw = landmark_to_array(lm[16])
+                lh = landmark_to_array(lm[23])
+                rh = landmark_to_array(lm[24])
+                lk = landmark_to_array(lm[25])
+                rk = landmark_to_array(lm[26])
+                la = landmark_to_array(lm[27])
+                ra = landmark_to_array(lm[28])
+                nose = landmark_to_array(lm[0])
+
+                # Joint angles
+                l_elbow_ang = joint_angle(ls, le, lw)
+                r_elbow_ang = joint_angle(rs, re, rw)
+                l_knee_ang = joint_angle(lh, lk, la)
+                r_knee_ang = joint_angle(rh, rk, ra)
+                l_shoulder_ang = joint_angle(lh, ls, le)
+                r_shoulder_ang = joint_angle(rh, rs, re)
+                l_hip_ang = joint_angle(ls, lh, lk)
+                r_hip_ang = joint_angle(rs, rh, rk)
+                trunk = trunk_lean_angle(lm)
+
+                # Visibility of key body parts (averaged L/R)
+                vis_arms = round((lm[15].visibility + lm[16].visibility) / 2, 2)
+                vis_legs = round((lm[27].visibility + lm[28].visibility) / 2, 2)
+                vis_torso = round((lm[23].visibility + lm[24].visibility) / 2, 2)
+
+                # Wrist velocity (motion intensity)
+                motion_intensity = 0.0
+                if self.state.prev_left_wrist is not None and self.state.prev_ts is not None:
+                    dt = max(ts - self.state.prev_ts, 1e-6)
+                    lv = euclidean_distance(lw, self.state.prev_left_wrist) / dt
+                    rv = euclidean_distance(rw, self.state.prev_right_wrist) / dt
+                    motion_intensity = round((lv + rv) / 2, 3)
+
+                self.state.prev_left_wrist = lw
+                self.state.prev_right_wrist = rw
+                self.state.prev_ts = ts
+
+                # Body height (nose to ankle midpoint)
+                ankle_mid = midpoint(la, ra)
+                body_h = euclidean_distance(nose, ankle_mid)
+
+                data["features"].update({
+                    "left_elbow_angle": round(l_elbow_ang, 1),
+                    "right_elbow_angle": round(r_elbow_ang, 1),
+                    "left_knee_angle": round(l_knee_ang, 1),
+                    "right_knee_angle": round(r_knee_ang, 1),
+                    "left_shoulder_angle": round(l_shoulder_ang, 1),
+                    "right_shoulder_angle": round(r_shoulder_ang, 1),
+                    "left_hip_angle": round(l_hip_ang, 1),
+                    "right_hip_angle": round(r_hip_ang, 1),
+                    "trunk_lean": round(trunk, 1),
+                    "motion_intensity": motion_intensity,
+                    "visibility_arms": vis_arms,
+                    "visibility_legs": vis_legs,
+                    "visibility_torso": vis_torso,
+                    "body_height_norm": round(body_h, 3),
+                })
+
+        # ── Hands ──
+        if self.hand_detector:
+            hand_result = self.hand_detector.process(frame)
+            if hand_result.multi_hand_landmarks:
+                hands = []
+                for hl in hand_result.multi_hand_landmarks[:2]:
+                    hands.append([[l.x, l.y, l.z] for l in hl.landmark])
+                data["hand_landmarks"] = hands
+                data["detected"] = True
+                data["features"]["hands_detected"] = len(hands)
+            else:
+                data["features"]["hands_detected"] = 0
+
+        return data
 
     def close(self):
         if self.pose_detector:
