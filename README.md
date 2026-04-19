@@ -1,5 +1,7 @@
 # Lumi
-This is a hackathon project done by ...
+
+This is a hackathon project done by Tianyi HAN, Xiaojing YAN, Leo Shan, Ling LING, I Cheong HONG and Xuan DENG.
+
 ---
 
 ## 🧠 Problem
@@ -10,7 +12,7 @@ In France, 1 in 6 children is affected by neurodevelopmental disorders (TND stra
 
 ## 🚀 Solution
 
-We build a home-based AI system centered on a developmental diary, aligned with natural parental behavior: documenting and cherishing a child’s growth. Rather than positioning it as a medical tool, we provide a simple, intuitive recording experience that encourages parents to capture daily moments—movements, interactions, and emotions. In the background, multimodal AI analyzes videos, cries, facial expressions, and gestures, translating them into standardized developmental indicators (Denver II, ASQ-3, Bayley). This creates a passive, continuous early-warning layer for neurodevelopmental risks without increasing parental burden. The result is a dual-value system: a meaningful growth diary for families and a structured signal detection tool.
+We build a home-based AI system centered on a developmental diary, aligned with natural parental behavior: documenting and cherishing a child’s growth. Rather than positioning it as a medical tool, we provide a simple and warm recording experience that encourages parents to capture daily moments—movements, interactions, and emotions of their child. In the background, multimodal AI analyzes videos, cries, facial expressions, and gestures, translating them into standardized developmental indicators (Denver II, ASQ-3, Bayley). This creates a passive, continuous early-warning layer for neurodevelopmental risks without increasing parental burden.
 
 ---
 
