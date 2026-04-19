@@ -16,16 +16,16 @@ We build a home-based AI system centered on a developmental diary, aligned with 
 
 ---
 
-# CDC Milestone Tracker
+## 🧠 System Architecture
 
-AI-assisted pediatric developmental screening backend using video analysis.
+AI-assisted pediatric developmental screening system using multimodal video analysis.
 
 This project uses a 3-layer architecture:
 1. MediaPipe landmark extraction (Pose / Face Mesh / Hands)
 2. Hand-crafted clinical feature extraction
 3. Rule-based developmental scoring (no end-to-end model training)
 
-## Features
+### Features
 
 - Gross motor assessment: `single_leg_stand`, `walking`, `ball_throwing`, `stair_climbing`
 - Fine motor assessment: `pincer_grasp`, `block_stacking`, `object_in_container`
@@ -34,7 +34,7 @@ This project uses a 3-layer architecture:
 - Real-time WebSocket frame processing
 - Clinical-style report generation endpoint
 
-## Tech Stack
+### Tech Stack
 
 - Python 3.10+
 - FastAPI + Uvicorn
@@ -43,7 +43,7 @@ This project uses a 3-layer architecture:
 - NumPy / SciPy
 - Pydantic v2
 
-## Project Structure
+### Project Structure
 
 ```text
 api/routes/        # REST + WebSocket endpoints
@@ -55,7 +55,7 @@ static/            # simple frontend page
 main.py            # FastAPI app entry point
 ```
 
-## Setup
+### Setup
 
 ```bash
 python -m venv .venv
@@ -63,7 +63,7 @@ source .venv/bin/activate
 pip install -r requirements.txt
 ```
 
-## Run
+### Run
 
 ```bash
 uvicorn main:app --host 0.0.0.0 --port 8000 --reload
@@ -74,17 +74,17 @@ Open:
 - Swagger docs: `http://localhost:8000/docs`
 - Health check: `http://localhost:8000/health`
 
-## REST API
+### REST API
 
 Base path: `http://localhost:8000/api/v1`
 
-### List available tasks
+#### List available tasks
 
 ```bash
 curl http://localhost:8000/api/v1/tasks
 ```
 
-### Gross motor assessment
+#### Gross motor assessment
 
 ```bash
 curl -X POST http://localhost:8000/api/v1/assessment/gross-motor \
@@ -99,7 +99,7 @@ Valid `action` values:
 - `ball_throwing`
 - `walking`
 
-### Fine motor assessment
+#### Fine motor assessment
 
 ```bash
 curl -X POST http://localhost:8000/api/v1/assessment/fine-motor \
@@ -113,7 +113,7 @@ Valid `action` values:
 - `block_stacking`
 - `object_in_container`
 
-### Joint attention (single video)
+#### Joint attention (single video)
 
 ```bash
 curl -X POST http://localhost:8000/api/v1/assessment/joint-attention \
@@ -127,7 +127,7 @@ Valid `behavior` values:
 - `eye_gaze`
 - `head_nod_shake`
 
-### Joint attention imitation (two videos)
+#### Joint attention imitation (two videos)
 
 ```bash
 curl -X POST http://localhost:8000/api/v1/assessment/joint-attention/imitation \
@@ -136,7 +136,7 @@ curl -X POST http://localhost:8000/api/v1/assessment/joint-attention/imitation \
 	-F "child_age_months=24"
 ```
 
-### Pain monitor
+#### Pain monitor
 
 ```bash
 curl -X POST http://localhost:8000/api/v1/assessment/pain-monitor \
@@ -144,7 +144,7 @@ curl -X POST http://localhost:8000/api/v1/assessment/pain-monitor \
 	-F "child_age_months=24"
 ```
 
-### Generate report
+#### Generate report
 
 ```bash
 curl -X POST http://localhost:8000/api/v1/report/generate \
@@ -156,7 +156,7 @@ curl -X POST http://localhost:8000/api/v1/report/generate \
 	}'
 ```
 
-## WebSocket (Real-time)
+### WebSocket (Real-time)
 
 Endpoint:
 
@@ -172,13 +172,13 @@ Message flow:
 3. Client requests scoring: `{"type": "assess"}`
 4. Client stops stream: `{"type": "stop"}`
 
-## Constraints and Notes
+### Constraints and Notes
 
 - Supported video formats: `.mp4`, `.avi`, `.mov`, `.mkv`, `.webm`
 - Max upload size: `200 MB`
 - Default sampling FPS: `15`
 - This tool is for screening support, not clinical diagnosis
 
-## License
+### License
 
 See `LICENSE`.
